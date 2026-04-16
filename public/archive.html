@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archive • UFO Archive Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stars"></div>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" data-site-name>UFO Archive Pro</a>
+      <div class="nav-links">
+        <a href="archive.html" class="active">Archive</a>
+        <a href="submit.html">Submit</a>
+        <a href="admin.html">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap page-main">
+    <section class="page-header">
+      <div>
+        <div class="pill">Approved sightings and evidence</div>
+        <h1>UFO case archive</h1>
+      </div>
+      <p>Search published evidence by type, location, tags, and description.</p>
+    </section>
+
+    <section class="glass filters">
+      <input id="search" type="search" placeholder="Search title, location, summary, tags...">
+      <select id="type-filter">
+        <option value="all">All evidence types</option>
+        <option value="image">Image</option>
+        <option value="video">Video</option>
+        <option value="document">Document</option>
+        <option value="case-study">Case study</option>
+      </select>
+    </section>
+
+    <section id="archive-results" class="card-grid"></section>
+  </main>
+
+  <div id="case-modal" class="modal hidden">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-panel glass">
+      <button class="icon-button" data-close-modal>&times;</button>
+      <div id="case-modal-content"></div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>

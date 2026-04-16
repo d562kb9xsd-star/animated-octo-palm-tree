@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UFO Archive Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stars"></div>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" data-site-name>UFO Archive Pro</a>
+      <div class="nav-links">
+        <a href="archive.html">Archive</a>
+        <a href="submit.html">Submit</a>
+        <a href="admin.html">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero wrap">
+      <div class="hero-copy">
+        <div class="pill">Supabase-powered evidence platform</div>
+        <h1>Upload UFO videos, images, documents, and full case studies.</h1>
+        <p>Turn sightings into a searchable public archive. Visitors can submit evidence, admins can moderate it, and approved reports become part of a polished online case library.</p>
+        <div class="cta-row">
+          <a class="button" href="submit.html">Submit a case</a>
+          <a class="button button-secondary" href="archive.html">Browse archive</a>
+        </div>
+        <div class="mini-stats">
+          <div><strong>4</strong><span>evidence types</span></div>
+          <div><strong>1</strong><span>admin dashboard</span></div>
+          <div><strong>∞</strong><span>cloud storage ready</span></div>
+        </div>
+      </div>
+      <div class="hero-card glass">
+        <h2>Included in this build</h2>
+        <ul class="feature-list">
+          <li>Public UFO archive with search and filters</li>
+          <li>Submission form with media upload</li>
+          <li>Case study text fields and witness summaries</li>
+          <li>Admin authentication and moderation tools</li>
+          <li>Supabase database and storage integration</li>
+          <li>Responsive dark design with a branded feel</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wrap section-grid">
+      <article class="glass info-card">
+        <h3>Public archive</h3>
+        <p>Show approved sightings with thumbnails, dates, tags, locations, and written reports in a clean searchable layout.</p>
+      </article>
+      <article class="glass info-card">
+        <h3>Admin review queue</h3>
+        <p>Approve, reject, and remove submissions from one dashboard using Supabase Auth and row-level security.</p>
+      </article>
+      <article class="glass info-card">
+        <h3>Fast deployment</h3>
+        <p>Host it on Netlify or Vercel as a static site while Supabase handles storage, auth, and database queries.</p>
+      </article>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>

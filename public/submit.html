@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Evidence • UFO Archive Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stars"></div>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" data-site-name>UFO Archive Pro</a>
+      <div class="nav-links">
+        <a href="archive.html">Archive</a>
+        <a href="submit.html" class="active">Submit</a>
+        <a href="admin.html">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap narrow page-main">
+    <section class="page-header">
+      <div>
+        <div class="pill">Share a sighting</div>
+        <h1>Submit UFO evidence</h1>
+      </div>
+      <p>Upload media or a written case report. Submissions go into a moderation queue before publication.</p>
+    </section>
+
+    <form id="submit-form" class="glass form-card">
+      <div class="form-grid">
+        <label>
+          <span>Case title</span>
+          <input name="title" required>
+        </label>
+        <label>
+          <span>Evidence type</span>
+          <select name="type" required>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="document">Document / PDF</option>
+            <option value="case-study">Case study only</option>
+          </select>
+        </label>
+        <label>
+          <span>Date observed</span>
+          <input type="date" name="date_observed">
+        </label>
+        <label>
+          <span>Location</span>
+          <input name="location" required>
+        </label>
+        <label class="full">
+          <span>Short summary</span>
+          <textarea name="summary" rows="3" required></textarea>
+        </label>
+        <label class="full">
+          <span>Detailed description</span>
+          <textarea name="description" rows="5"></textarea>
+        </label>
+        <label class="full">
+          <span>Case study / witness report</span>
+          <textarea name="case_study" rows="8"></textarea>
+        </label>
+        <label>
+          <span>Tags (comma separated)</span>
+          <input name="tags" placeholder="night sky, triangle, multiple witnesses">
+        </label>
+        <label>
+          <span>Your email (optional)</span>
+          <input type="email" name="submitter_email">
+        </label>
+        <label class="full">
+          <span>Upload file</span>
+          <input type="file" name="media" accept="image/*,video/*,.pdf,.txt">
+        </label>
+      </div>
+      <div class="form-actions">
+        <button class="button" type="submit">Submit case</button>
+        <p id="submit-notice" class="notice"></p>
+      </div>
+    </form>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>

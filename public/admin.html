@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin • UFO Archive Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stars"></div>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" data-site-name>UFO Archive Pro</a>
+      <div class="nav-links">
+        <a href="archive.html">Archive</a>
+        <a href="submit.html">Submit</a>
+        <a href="admin.html" class="active">Admin</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap page-main">
+    <section class="page-header">
+      <div>
+        <div class="pill">Moderation and publishing</div>
+        <h1>Admin dashboard</h1>
+      </div>
+      <p>Sign in with your Supabase admin account to approve, reject, or remove submitted cases.</p>
+    </section>
+
+    <section id="login-view" class="glass form-card narrow-card">
+      <h2>Admin login</h2>
+      <form id="admin-login-form">
+        <div class="form-grid single-col">
+          <label>
+            <span>Email</span>
+            <input id="admin-email" type="email" required>
+          </label>
+          <label>
+            <span>Password</span>
+            <input id="admin-password" type="password" required>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="button" type="submit">Sign in</button>
+          <p id="admin-notice" class="notice"></p>
+        </div>
+      </form>
+    </section>
+
+    <section id="admin-view" class="hidden">
+      <div class="admin-toolbar glass">
+        <div>
+          <h2>Moderation queue</h2>
+          <p>Pending, approved, and rejected cases appear here.</p>
+        </div>
+        <button id="logout-button" class="button button-secondary">Sign out</button>
+      </div>
+      <div id="admin-cases" class="card-grid"></div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
