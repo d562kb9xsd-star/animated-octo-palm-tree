@@ -203,7 +203,34 @@ async function handleSubmit() {
   });
 }
 
-async function handleAdmin() {
+async function handleAdmin(loginForm?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const email = qs('#admin-email')?.value;
+  const password = qs('#admin-password')?.value;
+
+  if (!supabaseClient) {
+    showNotice(notice, 'Supabase not configured', true);
+    return;
+  }
+
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    showNotice(notice, error.message, true);
+    return;
+  }
+
+  showNotice(notice, 'Login successful');
+  
+  loginView.classList.add('hidden');
+  adminView.classList.remove('hidden');
+
+  renderAdminCases();
+});) {
   const loginView = qs('#login-view');
   const adminView = qs('#admin-view');
   const loginForm = qs('#admin-login-form');
