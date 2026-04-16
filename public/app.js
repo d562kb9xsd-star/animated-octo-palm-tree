@@ -1,6 +1,6 @@
-const cfg = window.APP_CONFIG || {};
+const cfg = window.UFO_APP_CONFIG || {};
 const hasKeys = cfg.supabaseUrl && cfg.supabaseUrl !== 'YOUR_SUPABASE_URL' && cfg.supabaseAnonKey && cfg.supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY';
-const supabase = hasKeys ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey) : null;
+const supabaseClient = hasKeys ? window.supabaseClient.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey) : null;
 
 function qs(sel, root = document) { return root.querySelector(sel); }
 function qsa(sel, root = document) { return [...root.querySelectorAll(sel)]; }
@@ -84,14 +84,14 @@ function showNotice(el, msg, isError = false) {
 
 async function getCurrentUser() {
   if (!supabase) return null;
-  const { data } = await supabase.auth.getUser();
+  const { data } = await supabaseClient.auth.getUser();
   return data.user || null;
 }
 
 async function isAdmin() {
   const user = await getCurrentUser();
   if (!user) return false;
-  const { data, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  const { data, error } = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
   if (error) return false;
   return data.role === 'admin';
 }
@@ -99,9 +99,9 @@ async function isAdmin() {
 async function uploadMedia(file) {
   if (!file) return { path: '', url: '' };
   const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-  const { data, error } = await supabase.storage.from('ufo-media').upload(safeName, file, { upsert: false });
+  const { data, error } = await supabaseClient.storage.from('ufo-media').upload(safeName, file, { upsert: false });
   if (error) throw error;
-  const { data: pub } = supabase.storage.from('ufo-media').getPublicUrl(data.path);
+  const { data: pub } = supabaseClient.storage.from('ufo-media').getPublicUrl(data.path);
   return { path: data.path, url: pub.publicUrl };
 }
 
@@ -116,7 +116,7 @@ async function loadArchive() {
   const search = (qs('#search')?.value || '').toLowerCase().trim();
   const type = qs('#type-filter')?.value || 'all';
 
-  let query = supabase.from('cases').select('*').eq('status', 'approved').order('created_at', { ascending: false });
+  let query = supabaseClient.from('cases').select('*').eq('status', 'approved').order('created_at', { ascending: false });
   if (type !== 'all') query = query.eq('type', type);
   const { data, error } = await query;
   if (error) {
@@ -193,7 +193,7 @@ async function handleSubmit() {
         created_by: user?.id || null
       };
 
-      const { error } = await supabase.from('cases').insert(payload);
+      const { error } = await supabaseClient.from('cases').insert(payload);
       if (error) throw error;
       form.reset();
       showNotice(notice, 'Submission received. It is now pending review.');
@@ -213,7 +213,7 @@ async function handleAdmin() {
   if (!loginView || !adminView) return;
 
   async function renderAdminCases() {
-    const { data, error } = await supabase.from('cases').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabaseClient.from('cases').select('*').order('created_at', { ascending: false });
     if (error) {
       listRoot.innerHTML = `<div class="glass empty-state">${escapeHtml(error.message)}</div>`;
       return;
@@ -227,16 +227,16 @@ async function handleAdmin() {
   }
 
   async function updateStatus(id, status) {
-    const { error } = await supabase.from('cases').update({ status }).eq('id', id);
+    const { error } = await supabaseClient.from('cases').update({ status }).eq('id', id);
     if (error) return showNotice(notice, error.message, true);
     showNotice(notice, `Case ${status}.`);
     renderAdminCases();
   }
 
   async function deleteCase(id) {
-    const { data: item } = await supabase.from('cases').select('media_path').eq('id', id).single();
-    if (item?.media_path) await supabase.storage.from('ufo-media').remove([item.media_path]);
-    const { error } = await supabase.from('cases').delete().eq('id', id);
+    const { data: item } = await supabaseClient.from('cases').select('media_path').eq('id', id).single();
+    if (item?.media_path) await supabaseClient.storage.from('ufo-media').remove([item.media_path]);
+    const { error } = await supabaseClient.from('cases').delete().eq('id', id);
     if (error) return showNotice(notice, error.message, true);
     showNotice(notice, 'Case deleted.');
     renderAdminCases();
@@ -260,7 +260,7 @@ async function handleAdmin() {
     try {
       const email = qs('#admin-email').value;
       const password = qs('#admin-password').value;
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
       if (!(await isAdmin())) throw new Error('Signed in, but this account is not marked as an admin in profiles.');
       showNotice(notice, 'Signed in.');
@@ -271,7 +271,7 @@ async function handleAdmin() {
   });
 
   logout?.addEventListener('click', async () => {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     refreshAuthView();
   });
 
