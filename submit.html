@@ -3,14 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit a Case · UFO Archive Pro</title>
+  <title>Submit · UFO Archive Pro</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="page-alt">
+  <div class="stars"></div>
+  <div class="stars stars-2"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
   <header class="site-header">
     <div class="container site-header-inner">
       <a href="index.html" class="brand">
-        <span class="brand-mark">🛸</span>
+        <div class="brand-logo">◉</div>
         <span data-site-name>UFO Archive Pro</span>
       </a>
 
@@ -24,28 +29,34 @@
   </header>
 
   <main class="page-shell">
-    <div class="container">
-      <section class="glass page-hero">
-        <div class="eyebrow">Public submission</div>
-        <h1>Submit a UFO sighting or case study</h1>
-        <p class="lead">Add a title, type, date, location, summary, evidence, and written account. New cases enter the moderation queue as pending.</p>
-      </section>
+    <section class="section">
+      <div class="container">
+        <div class="glass page-hero">
+          <div class="eyebrow">Public reporting portal</div>
+          <h1>Submit a sighting, witness report, or supporting evidence.</h1>
+          <p class="lead">
+            Complete the form below to send a case for moderation. Uploaded reports are saved as pending until reviewed by an admin.
+          </p>
+        </div>
+      </div>
+    </section>
 
-      <section class="section">
+    <section class="section">
+      <div class="container">
         <form id="submit-form" class="glass form-card">
           <div class="form-grid">
             <label>
               Title
-              <input type="text" name="title" required placeholder="Bright object above Southampton" />
+              <input type="text" name="title" placeholder="e.g. Triangular lights over Southampton" required />
             </label>
 
             <label>
               Type
               <select name="type" required>
+                <option value="">Choose type</option>
                 <option value="image">Image</option>
                 <option value="video">Video</option>
                 <option value="document">Document</option>
-                <option value="report">Report</option>
               </select>
             </label>
 
@@ -56,52 +67,82 @@
 
             <label>
               Location
-              <input type="text" name="location" placeholder="Southampton, UK" />
+              <input type="text" name="location" placeholder="City, region, country" />
             </label>
 
             <label class="full">
               Short summary
-              <textarea name="summary" placeholder="What happened?" required></textarea>
+              <textarea name="summary" placeholder="Brief description of what was seen" required></textarea>
             </label>
 
             <label class="full">
-              Description
-              <textarea name="description" placeholder="Movement, sound, duration, weather, nearby objects, direction of travel..."></textarea>
+              Detailed description
+              <textarea name="description" placeholder="Describe the movement, appearance, duration, direction, weather, sound, and any unusual behaviour"></textarea>
             </label>
 
             <label class="full">
               Case study / witness report
-              <textarea name="case_study" placeholder="Longer written witness account"></textarea>
+              <textarea name="case_study" placeholder="Add any longer written case notes, witness statements, or investigation summary"></textarea>
             </label>
 
             <label>
-              Tags
-              <input type="text" name="tags" placeholder="triangle, silent, bright" />
+              Tags (comma separated)
+              <input type="text" name="tags" placeholder="triangle, silent, night sky, multiple witnesses" />
             </label>
 
             <label>
-              Your email
+              Your email (optional)
               <input type="email" name="submitter_email" placeholder="name@example.com" />
             </label>
 
             <label class="full">
-              Upload media
+              Upload file
               <input type="file" name="media" />
             </label>
           </div>
 
           <div class="hero-actions">
             <button type="submit" class="button button-primary">Submit case</button>
+            <a class="button button-secondary" href="archive.html">Browse archive</a>
           </div>
 
-          <div id="submit-notice" class="notice" style="display:block;"></div>
+          <div id="submit-notice" class="notice hidden"></div>
         </form>
-      </section>
-    </div>
+      </div>
+    </section>
 
-    <div class="container footer">
-      New submissions are saved as pending until reviewed by an admin.
-    </div>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand footer-brand">
+            <div class="brand-logo">◉</div>
+            <span data-site-name>UFO Archive Pro</span>
+          </div>
+          <p class="muted">
+            Submit sightings, attach evidence, and send witness statements for moderation and review.
+          </p>
+        </div>
+
+        <div>
+          <h4>Navigation</h4>
+          <a href="index.html">Home</a>
+          <a href="archive.html">Archive</a>
+          <a href="submit.html">Submit</a>
+          <a href="admin.html">Admin</a>
+        </div>
+
+        <div>
+          <h4>Submission flow</h4>
+          <a href="submit.html">New report</a>
+          <a href="archive.html">Approved cases</a>
+          <a href="admin.html">Admin moderation</a>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        UFO Archive Pro · Public submissions are moderated before publication.
+      </div>
+    </footer>
   </main>
 
   <script src="config.js"></script>
