@@ -504,4 +504,54 @@ textarea {
   .hero {
     padding-top: 48px;
   }
+/* ===== BRAND LOGO ===== */
+
+.brand-logo {
+  height: 42px;
+  width: auto;
+  display: block;
+  border-radius: 10px;
+}
+
+/* ===== PREMIUM FOOTER ===== */
+
+.footer {
+  margin-top: 60px;
+  padding: 40px 0 30px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 30px;
+}
+
+.footer h4 {
+  margin-bottom: 10px;
+}
+
+.footer a {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.footer a:hover {
+  color: var(--text);
+}
+
+.footer-bottom {
+  margin-top: 30px;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
 }
