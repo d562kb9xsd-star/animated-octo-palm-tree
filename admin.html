@@ -7,10 +7,15 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="page-alt">
+  <div class="stars"></div>
+  <div class="stars stars-2"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+
   <header class="site-header">
     <div class="container site-header-inner">
       <a href="index.html" class="brand">
-        <span class="brand-mark">🛸</span>
+        <div class="brand-logo">◉</div>
         <span data-site-name>UFO Archive Pro</span>
       </a>
 
@@ -24,61 +29,109 @@
   </header>
 
   <main class="page-shell">
-    <div class="container admin-layout">
-      <section id="login-view" class="glass auth-card">
-        <div class="eyebrow">Admin sign in</div>
-        <h1 style="margin-top:16px;">Moderation dashboard access</h1>
-        <p class="lead">Sign in with your admin account to approve, reject, review, and delete cases.</p>
-
-        <form id="admin-login-form">
-          <label>
-            Email
-            <input id="admin-email" type="email" required placeholder="admin@example.com" />
-          </label>
-
-          <label>
-            Password
-            <input id="admin-password" type="password" required placeholder="••••••••" />
-          </label>
-
-          <div class="hero-actions">
-            <button type="submit" class="button button-primary">Sign in</button>
-          </div>
-
-          <div id="admin-notice" class="notice" style="display:block;"></div>
-        </form>
-      </section>
-
-      <section id="admin-view" class="hidden">
+    <section class="section">
+      <div class="container">
         <div class="glass page-hero">
-          <div class="eyebrow">Admin panel</div>
-          <h1>Moderate pending and published cases</h1>
-          <p class="lead">Review submissions, inspect details, approve, reject, delete, and filter by status.</p>
+          <div class="eyebrow">Moderation dashboard</div>
+          <h1>Review, approve, reject, and manage incoming cases.</h1>
+          <p class="lead">
+            Sign in with your admin account to manage pending reports, inspect media, review witness notes,
+            and control which cases become public.
+          </p>
+        </div>
+      </div>
+    </section>
 
-          <div class="hero-actions">
-            <button id="logout-button" class="button button-secondary">Log out</button>
+    <section class="section">
+      <div class="container">
+        <div id="login-view" class="glass auth-card">
+          <h2 style="margin-bottom: 10px;">Admin sign in</h2>
+          <p class="muted" style="margin-top: 0; margin-bottom: 22px;">
+            Only authorised moderators can access the case review dashboard.
+          </p>
+
+          <form id="admin-login-form">
+            <label>
+              Email
+              <input id="admin-email" type="email" placeholder="admin@example.com" required />
+            </label>
+
+            <label>
+              Password
+              <input id="admin-password" type="password" placeholder="Enter password" required />
+            </label>
+
+            <div class="hero-actions">
+              <button type="submit" class="button button-primary">Sign in</button>
+            </div>
+
+            <div id="admin-notice" class="notice hidden"></div>
+          </form>
+        </div>
+
+        <div id="admin-view" class="hidden">
+          <div class="glass form-card" style="margin-bottom: 18px;">
+            <div class="section-head" style="margin-bottom: 0;">
+              <div>
+                <h2>Case moderation queue</h2>
+                <p class="muted">Filter cases by status, open full details, and take action instantly.</p>
+              </div>
+
+              <div class="inline-actions" style="margin-top: 0;">
+                <button id="logout-button" class="button button-secondary" type="button">Log out</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="admin-cases">
+            <div class="glass empty-state">Loading moderation queue...</div>
           </div>
         </div>
-
-        <section class="section">
-          <div id="admin-cases"></div>
-        </section>
-      </section>
-    </div>
-
-    <div id="case-modal" class="modal hidden">
-      <div class="glass modal-card">
-        <div class="inline-actions" style="justify-content:flex-end; margin-top:0; margin-bottom:14px;">
-          <button class="button button-secondary modal-close" data-close-modal>Close</button>
-        </div>
-        <div id="case-modal-content"></div>
       </div>
-    </div>
+    </section>
 
-    <div class="container footer">
-      Admin-only moderation interface for UFO Archive Pro.
-    </div>
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand footer-brand">
+            <div class="brand-logo">◉</div>
+            <span data-site-name>UFO Archive Pro</span>
+          </div>
+          <p class="muted">
+            Admin-only moderation environment for case review, status control, and evidence management.
+          </p>
+        </div>
+
+        <div>
+          <h4>Navigation</h4>
+          <a href="index.html">Home</a>
+          <a href="archive.html">Archive</a>
+          <a href="submit.html">Submit</a>
+          <a href="admin.html">Admin</a>
+        </div>
+
+        <div>
+          <h4>Moderation</h4>
+          <a href="admin.html">Pending queue</a>
+          <a href="archive.html">Public archive</a>
+          <a href="submit.html">Submission form</a>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        UFO Archive Pro · Admin moderation interface for protected review and publication control.
+      </div>
+    </footer>
   </main>
+
+  <div id="case-modal" class="modal hidden">
+    <div class="glass modal-card">
+      <div class="card-actions" style="justify-content: flex-end;">
+        <button class="button button-secondary" data-close-modal>Close</button>
+      </div>
+      <div id="case-modal-content"></div>
+    </div>
+  </div>
 
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
