@@ -203,54 +203,88 @@ async function handleSubmit() {
   });
 }
 
-async function handleAdmin(loginForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const email = qs('#admin-email')?.value;
-  const password = qs('#admin-password')?.value;
-
-  if (!supabaseClient) {
-    showNotice(notice, 'Supabase not configured', true);
-    return;
-  }
-
-  const { error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    showNotice(notice, error.message, true);
-    return;
-  }
-
-  showNotice(notice, 'Login successful');
-  
-  loginView.classList.add('hidden');
-  adminView.classList.remove('hidden');
-
-  renderAdminCases();
-});) {
+async function handleAdmin() {
   const loginView = qs('#login-view');
   const adminView = qs('#admin-view');
   const loginForm = qs('#admin-login-form');
   const notice = qs('#admin-notice');
   const logout = qs('#logout-button');
   const listRoot = qs('#admin-cases');
-  if (!loginView || !adminView) return;
+
+  if (!loginView || !adminView || !loginForm) return;
 
   async function renderAdminCases() {
-    const { data, error } = await supabaseClient.from('cases').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabaseClient
+      .from('cases')
+      .select('*')
+      .order('created_at', { ascending: false });
+
     if (error) {
-      listRoot.innerHTML = `<div class="glass empty-state">${escapeHtml(error.message)}</div>`;
+      showNotice(notice, error.message, true);
       return;
     }
-    listRoot.innerHTML = data.map(item => caseCard(item, true)).join('');
-    bindDetailButtons(data);
 
-    qsa('[data-approve]').forEach(btn => btn.onclick = () => updateStatus(btn.dataset.approve, 'approved'));
-    qsa('[data-reject]').forEach(btn => btn.onclick = () => updateStatus(btn.dataset.reject, 'rejected'));
-    qsa('[data-delete]').forEach(btn => btn.onclick = () => deleteCase(btn.dataset.delete));
+    if (listRoot) {
+      listRoot.innerHTML = (data || []).map(item => `
+        <article class="glass case-card">
+          <h3>${escapeHtml(item.title || 'Untitled')}</h3>
+          <p>${escapeHtml(item.description || '')}</p>
+          <p><strong>Status:</strong> ${escapeHtml(item.status || 'pending')}</p>
+        </article>
+      `).join('');
+    }
+  }
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = qs('#admin-email')?.value?.trim();
+    const password = qs('#admin-password')?.value;
+
+    if (!supabaseClient) {
+      showNotice(notice, 'Supabase not configured', true);
+      return;
+    }
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      showNotice(notice, error.message, true);
+      return;
+    }
+
+    const user = data.user;
+    if (!user) {
+      showNotice(notice, 'Login failed', true);
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || profile?.role !== 'admin') {
+      showNotice(notice, 'Not an admin account', true);
+      return;
+    }
+
+    showNotice(notice, 'Login successful');
+    loginView.classList.add('hidden');
+    adminView.classList.remove('hidden');
+    await renderAdminCases();
+  });
+
+  logout?.addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    adminView.classList.add('hidden');
+    loginView.classList.remove('hidden');
+  });
+}
   }
 
   async function updateStatus(id, status) {
