@@ -1,5 +1,5 @@
 window.UFO_APP_CONFIG = {
   siteName: 'UFO Archive Pro',
   supabaseUrl: 'https://fwqtcmzvtfthwwbveowi.supabase.co',
-  supabaseAnonKey: 'sb_publishable_LXOI7XQV3rLFO7RpokeQ-Q_z8tt2yJK'
+  supabaseAnonKey: 'sb_publishable_5ImXLmCaWeRzVKx_rTdgkQ_h4_xqG_b'
 };
