@@ -1,113 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Archive · UFO Archive Pro</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Archive</title>
+
+  <link rel="icon" href="favicon.svg"/>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
-<body class="page-alt">
-  <div class="stars"></div>
-  <div class="stars stars-2"></div>
-  <div class="glow glow-1"></div>
-  <div class="glow glow-2"></div>
-  <div class="scanline"></div>
 
+<body>
   <header class="site-header">
-    <div class="container site-header-inner">
-      <a href="index.html" class="brand">
-        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
-        <span data-site-name>UFO Archive Pro</span>
-      </a>
-
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="archive.html" class="active">Archive</a>
-        <a href="submit.html">Submit</a>
-        <a href="admin.html">Admin</a>
-      </nav>
+    <div class="container">
+      <a href="index.html">Home</a>
+      <a href="archive.html" class="active">Archive</a>
+      <a href="submit.html">Submit</a>
+      <a href="admin.html">Admin</a>
     </div>
   </header>
 
-  <main class="page-shell">
-    <section class="section">
-      <div class="container">
-        <div class="glass page-hero">
-          <div class="eyebrow">Released public case files</div>
-          <h1>Approved sightings and evidence archive</h1>
-          <p class="lead">
-            Browse moderated public reports, filter by media type, search locations and case descriptions,
-            and inspect only approved published files.
-          </p>
-        </div>
-      </div>
-    </section>
+  <main class="container">
+    <h1>Archive</h1>
 
-    <section class="section">
-      <div class="container">
-        <div class="glass archive-toolbar">
-          <input id="search" type="text" placeholder="Search title, location, summary, tags..." />
-          <select id="type-filter">
-            <option value="all">All file types</option>
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-            <option value="document">Document</option>
-            <option value="report">Report</option>
-          </select>
-        </div>
+    <input id="search" placeholder="Search..."/>
+    <select id="type-filter">
+      <option value="all">All</option>
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+    </select>
 
-        <div id="archive-results" class="cases-grid">
-          <div class="glass empty-state">Loading approved case files...</div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div class="container footer-grid">
-        <div>
-          <div class="brand footer-brand">
-            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
-            <span data-site-name>UFO Archive Pro</span>
-          </div>
-          <p class="muted">
-            Public archive of approved UAP sightings, witness reports, uploaded evidence, and released case notes.
-          </p>
-        </div>
-
-        <div>
-          <h4>Navigation</h4>
-          <a href="index.html">Home</a>
-          <a href="archive.html">Archive</a>
-          <a href="submit.html">Submit</a>
-          <a href="admin.html">Admin</a>
-        </div>
-
-        <div>
-          <h4>Archive tools</h4>
-          <a href="archive.html">Released files</a>
-          <a href="submit.html">Submit new report</a>
-          <a href="admin.html">Moderation console</a>
-        </div>
-      </div>
-
-      <div class="container footer-bottom">
-        UAP archive pro · approved public release database · searchable case index
-      </div>
-    </footer>
+    <div id="archive-results"></div>
   </main>
 
-  <div id="case-modal" class="modal hidden">
-    <div class="glass modal-card">
-      <div class="card-actions" style="justify-content:flex-end;">
-        <button class="button button-secondary" data-close-modal>Close</button>
-      </div>
-      <div id="case-modal-content"></div>
-    </div>
-  </div>
-
   <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
-</html>
+</html>ml>
