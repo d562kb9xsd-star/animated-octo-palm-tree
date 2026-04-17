@@ -1,66 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin • UFO Archive Pro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · UFO Archive Pro</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="stars"></div>
-  <nav class="nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="index.html" data-site-name>UFO Archive Pro</a>
-      <div class="nav-links">
+<body class="page-alt">
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">🛸</span>
+        <span data-site-name>UFO Archive Pro</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
         <a href="archive.html">Archive</a>
         <a href="submit.html">Submit</a>
         <a href="admin.html" class="active">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <div class="container admin-layout">
+      <section id="login-view" class="glass auth-card">
+        <div class="eyebrow">Admin sign in</div>
+        <h1 style="margin-top:16px;">Moderation dashboard access</h1>
+        <p class="lead">Sign in with your admin account to approve, reject, review, and delete cases.</p>
+
+        <form id="admin-login-form">
+          <label>
+            Email
+            <input id="admin-email" type="email" required placeholder="admin@example.com" />
+          </label>
+
+          <label>
+            Password
+            <input id="admin-password" type="password" required placeholder="••••••••" />
+          </label>
+
+          <div class="hero-actions">
+            <button type="submit" class="button button-primary">Sign in</button>
+          </div>
+
+          <div id="admin-notice" class="notice" style="display:block;"></div>
+        </form>
+      </section>
+
+      <section id="admin-view" class="hidden">
+        <div class="glass page-hero">
+          <div class="eyebrow">Admin panel</div>
+          <h1>Moderate pending and published cases</h1>
+          <p class="lead">Review submissions, inspect details, approve, reject, delete, and filter by status.</p>
+
+          <div class="hero-actions">
+            <button id="logout-button" class="button button-secondary">Log out</button>
+          </div>
+        </div>
+
+        <section class="section">
+          <div id="admin-cases"></div>
+        </section>
+      </section>
+    </div>
+
+    <div id="case-modal" class="modal hidden">
+      <div class="glass modal-card">
+        <div class="inline-actions" style="justify-content:flex-end; margin-top:0; margin-bottom:14px;">
+          <button class="button button-secondary modal-close" data-close-modal>Close</button>
+        </div>
+        <div id="case-modal-content"></div>
       </div>
     </div>
-  </nav>
 
-  <main class="wrap page-main">
-    <section class="page-header">
-      <div>
-        <div class="pill">Moderation and publishing</div>
-        <h1>Admin dashboard</h1>
-      </div>
-      <p>Sign in with your Supabase admin account to approve, reject, or remove submitted cases.</p>
-    </section>
-
-    <section id="login-view" class="glass form-card narrow-card">
-      <h2>Admin login</h2>
-      <form id="admin-login-form">
-        <div class="form-grid single-col">
-          <label>
-            <span>Email</span>
-            <input id="admin-email" type="email" required>
-          </label>
-          <label>
-            <span>Password</span>
-            <input id="admin-password" type="password" required>
-          </label>
-        </div>
-        <div class="form-actions">
-          <button class="button" type="submit">Sign in</button>
-          <p id="admin-notice" class="notice"></p>
-        </div>
-      </form>
-    </section>
-
-    <section id="admin-view" class="hidden">
-      <div class="admin-toolbar glass">
-        <div>
-          <h2>Moderation queue</h2>
-          <p>Pending, approved, and rejected cases appear here.</p>
-        </div>
-        <button id="logout-button" class="button button-secondary">Sign out</button>
-      </div>
-      <div id="admin-cases" class="card-grid"></div>
-    </section>
+    <div class="container footer">
+      Admin-only moderation interface for UFO Archive Pro.
+    </div>
   </main>
 
   <script src="config.js"></script>
