@@ -11,11 +11,12 @@
   <div class="stars stars-2"></div>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
+  <div class="scanline"></div>
 
   <header class="site-header">
     <div class="container site-header-inner">
       <a href="index.html" class="brand">
-        <div class="brand-logo">◉</div>
+        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
         <span data-site-name>UFO Archive Pro</span>
       </a>
 
@@ -32,10 +33,11 @@
     <section class="section">
       <div class="container">
         <div class="glass page-hero">
-          <div class="eyebrow">Public reporting portal</div>
-          <h1>Submit a sighting, witness report, or supporting evidence.</h1>
+          <div class="eyebrow">Public case intake</div>
+          <h1>File a sighting report and upload supporting evidence</h1>
           <p class="lead">
-            Complete the form below to send a case for moderation. Uploaded reports are saved as pending until reviewed by an admin.
+            Submit a structured case file including date, location, summary, witness description,
+            tags, and media. All submissions enter the moderation queue as pending until reviewed.
           </p>
         </div>
       </div>
@@ -46,17 +48,18 @@
         <form id="submit-form" class="glass form-card">
           <div class="form-grid">
             <label>
-              Title
+              Case title
               <input type="text" name="title" placeholder="e.g. Triangular lights over Southampton" required />
             </label>
 
             <label>
-              Type
+              File type
               <select name="type" required>
-                <option value="">Choose type</option>
+                <option value="">Select type</option>
                 <option value="image">Image</option>
                 <option value="video">Video</option>
                 <option value="document">Document</option>
+                <option value="report">Report</option>
               </select>
             </label>
 
@@ -71,38 +74,38 @@
             </label>
 
             <label class="full">
-              Short summary
-              <textarea name="summary" placeholder="Brief description of what was seen" required></textarea>
+              Summary
+              <textarea name="summary" placeholder="Brief overview of the sighting, event, or anomaly" required></textarea>
             </label>
 
             <label class="full">
               Detailed description
-              <textarea name="description" placeholder="Describe the movement, appearance, duration, direction, weather, sound, and any unusual behaviour"></textarea>
+              <textarea name="description" placeholder="Describe shape, movement, duration, sound, altitude, weather conditions, direction of travel, and any unusual behaviour"></textarea>
             </label>
 
             <label class="full">
-              Case study / witness report
-              <textarea name="case_study" placeholder="Add any longer written case notes, witness statements, or investigation summary"></textarea>
+              Case notes / witness report
+              <textarea name="case_study" placeholder="Add witness statements, investigator notes, timeline details, or a longer structured case summary"></textarea>
             </label>
 
             <label>
-              Tags (comma separated)
-              <input type="text" name="tags" placeholder="triangle, silent, night sky, multiple witnesses" />
+              Tags
+              <input type="text" name="tags" placeholder="triangle, silent, multiple witnesses, night sky" />
             </label>
 
             <label>
-              Your email (optional)
+              Contact email
               <input type="email" name="submitter_email" placeholder="name@example.com" />
             </label>
 
             <label class="full">
-              Upload file
+              Upload media or file
               <input type="file" name="media" />
             </label>
           </div>
 
           <div class="hero-actions">
-            <button type="submit" class="button button-primary">Submit case</button>
+            <button type="submit" class="button button-primary">Submit case file</button>
             <a class="button button-secondary" href="archive.html">Browse archive</a>
           </div>
 
@@ -115,11 +118,11 @@
       <div class="container footer-grid">
         <div>
           <div class="brand footer-brand">
-            <div class="brand-logo">◉</div>
+            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
             <span data-site-name>UFO Archive Pro</span>
           </div>
           <p class="muted">
-            Submit sightings, attach evidence, and send witness statements for moderation and review.
+            Structured public submission portal for sightings, evidence, and witness reports awaiting moderator review.
           </p>
         </div>
 
@@ -133,14 +136,14 @@
 
         <div>
           <h4>Submission flow</h4>
-          <a href="submit.html">New report</a>
-          <a href="archive.html">Approved cases</a>
-          <a href="admin.html">Admin moderation</a>
+          <a href="submit.html">New case file</a>
+          <a href="archive.html">Released files</a>
+          <a href="admin.html">Moderation console</a>
         </div>
       </div>
 
       <div class="container footer-bottom">
-        UFO Archive Pro · Public submissions are moderated before publication.
+        UAP archive pro · public reporting interface · submissions held pending moderation
       </div>
     </footer>
   </main>
