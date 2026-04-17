@@ -4,19 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UFO Archive Pro</title>
-
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-
-  <!-- BACKGROUND EFFECTS -->
   <div class="stars"></div>
   <div class="stars stars-2"></div>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
+  <div class="scanline"></div>
 
-  <!-- UFO ANIMATION -->
   <div class="ufo-wrap">
     <div class="ufo">
       <div class="ufo-beam"></div>
@@ -28,12 +24,10 @@
     </div>
   </div>
 
-  <!-- HEADER -->
   <header class="site-header">
     <div class="container site-header-inner">
-
       <a href="index.html" class="brand">
-        <img src="logo.svg" class="brand-logo" alt="UFO Logo" />
+        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
         <span data-site-name>UFO Archive Pro</span>
       </a>
 
@@ -43,125 +37,138 @@
         <a href="submit.html">Submit</a>
         <a href="admin.html">Admin</a>
       </nav>
-
     </div>
   </header>
 
-  <!-- MAIN -->
   <main>
-
-    <!-- HERO -->
     <section class="hero">
       <div class="container hero-grid">
-
-        <div class="glass">
-          <div class="eyebrow">Evidence-led UFO reporting platform</div>
-
-          <h1>
-            Report sightings, upload evidence, and publish verified UFO cases.
-          </h1>
-
+        <div class="glass hero-main">
+          <div class="eyebrow">Restricted public reporting interface</div>
+          <h1>UAP case intake, evidence logging, and moderated publication database.</h1>
           <p class="lead">
-            UFO Archive Pro is a moderated public archive for witness reports,
-            images, videos, and documented case studies.
+            UFO Archive Pro is a classified-style public reporting and moderation platform for anomalous sightings,
+            uploaded evidence, witness reports, and reviewed case files.
           </p>
 
           <div class="hero-actions">
-            <a class="button button-primary" href="submit.html">Submit a case</a>
-            <a class="button button-secondary" href="archive.html">Browse archive</a>
+            <a class="button button-primary" href="submit.html">File report</a>
+            <a class="button button-secondary" href="archive.html">Open archive</a>
+            <a class="button button-secondary" href="admin.html">Admin access</a>
           </div>
 
           <div class="stats-grid">
-            <div class="stat-card glass">
-              <strong>Photos</strong>
-              <span class="muted">Upload evidence</span>
+            <div class="glass stat-card">
+              <strong>Visuals</strong>
+              <span class="muted">Images and footage</span>
             </div>
-
-            <div class="stat-card glass">
-              <strong>Video</strong>
-              <span class="muted">Capture sightings</span>
+            <div class="glass stat-card">
+              <strong>Reports</strong>
+              <span class="muted">Witness case files</span>
             </div>
-
-            <div class="stat-card glass">
-              <strong>Cases</strong>
-              <span class="muted">Public archive</span>
+            <div class="glass stat-card">
+              <strong>Review</strong>
+              <span class="muted">Controlled publication</span>
             </div>
           </div>
         </div>
 
-        <div class="glass">
+        <div class="glass hero-side">
           <div class="signal-card">
-            <h3>Public submissions</h3>
-            <p class="muted">Users submit sightings with evidence and descriptions.</p>
+            <h3>Case intake</h3>
+            <p class="muted">Structured public submission of sightings with media, date, location, and case notes.</p>
           </div>
-
           <div class="signal-card">
-            <h3>Admin review</h3>
-            <p class="muted">Cases are reviewed and approved before publishing.</p>
+            <h3>Moderation queue</h3>
+            <p class="muted">Pending case review, evidence inspection, approval control, and deletion workflow.</p>
           </div>
-
           <div class="signal-card">
-            <h3>Verified archive</h3>
-            <p class="muted">Only approved cases appear publicly.</p>
+            <h3>Released archive</h3>
+            <p class="muted">Only approved files are surfaced in the public case archive.</p>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- FEATURED -->
     <section class="section">
       <div class="container">
-
-        <h2>Featured sighting</h2>
-
+        <div class="section-head">
+          <div>
+            <h2>Featured released case file</h2>
+            <p class="muted">Latest approved report promoted from the archive.</p>
+          </div>
+        </div>
         <div id="featured-case">
-          <div class="glass empty-state">Loading...</div>
+          <div class="glass empty-state">Loading featured case file...</div>
         </div>
-
       </div>
     </section>
 
-    <!-- LATEST -->
     <section class="section">
       <div class="container">
-
-        <h2>Latest approved sightings</h2>
+        <div class="section-head">
+          <div>
+            <h2>Recent released sightings</h2>
+            <p class="muted">Most recent approved public case files.</p>
+          </div>
+          <div class="inline-actions" style="margin-top:0;">
+            <a class="button button-secondary" href="archive.html">View all files</a>
+          </div>
+        </div>
 
         <div id="home-latest-cases" class="cases-grid">
-          <div class="glass empty-state">Loading...</div>
+          <div class="glass empty-state">Loading released files...</div>
         </div>
-
       </div>
     </section>
 
-    <!-- CTA -->
     <section class="section">
       <div class="container">
+        <div class="cards-grid">
+          <article class="glass info-card">
+            <div class="eyebrow">Module 01</div>
+            <h3 style="margin-top:12px;">Submission intake</h3>
+            <p class="muted">Public witnesses submit reports and attach evidence for moderation review.</p>
+          </article>
 
-        <div class="glass cta-panel">
-          <h2>Seen something unusual?</h2>
-          <p class="lead">Submit your sighting and contribute to the archive.</p>
+          <article class="glass info-card">
+            <div class="eyebrow">Module 02</div>
+            <h3 style="margin-top:12px;">Analyst review</h3>
+            <p class="muted">Moderators inspect content, apply status, and release only verified public cases.</p>
+          </article>
 
-          <div class="hero-actions">
-            <a class="button button-primary" href="submit.html">Submit report</a>
-          </div>
+          <article class="glass info-card">
+            <div class="eyebrow">Module 03</div>
+            <h3 style="margin-top:12px;">Archive release</h3>
+            <p class="muted">Approved cases are exposed to the public archive for browsing and study.</p>
+          </article>
         </div>
-
       </div>
     </section>
 
-    <!-- FOOTER -->
+    <section class="section">
+      <div class="container">
+        <div class="glass page-hero">
+          <div class="eyebrow">Public reporting access</div>
+          <h2 style="margin-top:14px;">Observed an anomalous object or aerial event?</h2>
+          <p class="lead">Submit a structured report and attach available evidence for moderator review.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="submit.html">Submit new case</a>
+            <a class="button button-secondary" href="archive.html">Browse archive</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <footer class="footer">
       <div class="container footer-grid">
-
         <div>
           <div class="brand footer-brand">
-            <img src="logo.svg" class="brand-logo" />
-            <span>UFO Archive Pro</span>
+            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
+            <span data-site-name>UFO Archive Pro</span>
           </div>
           <p class="muted">
-            A moderated UFO reporting and evidence platform.
+            Public UAP reporting, reviewed evidence logging, and moderated case release system.
           </p>
         </div>
 
@@ -174,24 +181,21 @@
         </div>
 
         <div>
-          <h4>Platform</h4>
-          <a href="archive.html">Cases</a>
-          <a href="submit.html">Submit</a>
+          <h4>System modules</h4>
+          <a href="submit.html">Case intake</a>
+          <a href="archive.html">Released files</a>
+          <a href="admin.html">Review console</a>
         </div>
-
       </div>
 
-      <div class="footer-bottom">
-        UFO Archive Pro © 2026
+      <div class="container footer-bottom">
+        UAP archive pro · controlled release environment · public reporting enabled
       </div>
     </footer>
-
   </main>
 
-  <!-- SCRIPTS -->
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
-
 </body>
 </html>
