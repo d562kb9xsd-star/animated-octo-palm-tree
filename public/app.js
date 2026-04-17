@@ -288,11 +288,19 @@ async function handleAdmin() {
 
   if (!loginView || !adminView || !loginForm) return;
 
+  let currentAdminFilter = 'pending';
+
   async function renderAdminCases() {
-    const { data, error } = await supabaseClient
+    let query = supabaseClient
       .from('cases')
       .select('*')
       .order('created_at', { ascending: false });
+
+    if (currentAdminFilter !== 'all') {
+      query = query.eq('status', currentAdminFilter);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       showNotice(notice, error.message, true);
@@ -303,19 +311,44 @@ async function handleAdmin() {
 
     window.adminCases = data || [];
 
-    listRoot.innerHTML = (data || []).map((item) => `
+    const toolbar = `
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+        <button class="button ${currentAdminFilter === 'pending' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('pending')">Pending</button>
+        <button class="button ${currentAdminFilter === 'approved' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('approved')">Approved</button>
+        <button class="button ${currentAdminFilter === 'rejected' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('rejected')">Rejected</button>
+        <button class="button ${currentAdminFilter === 'all' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('all')">All</button>
+      </div>
+    `;
+
+    const cards = (data || []).map((item) => `
       <article class="glass case-card">
+        <div class="badges" style="margin-bottom:8px;">
+          <span class="badge">${escapeHtml(item.type || '')}</span>
+          <span class="badge badge-${escapeHtml(item.status || 'pending')}">${escapeHtml(item.status || 'pending')}</span>
+        </div>
+
         <h3>${escapeHtml(item.title || 'Untitled')}</h3>
+        <p class="meta">${escapeHtml(item.location || '')} • ${formatDate(item.date_observed || item.created_at)}</p>
         <p>${escapeHtml(item.description || item.summary || '')}</p>
-        <p><strong>Status:</strong> ${escapeHtml(item.status || 'pending')}</p>
+
+        ${item.media_url ? `<div style="margin:12px 0;">${renderMedia(item)}</div>` : ''}
 
         <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
           <button class="button" onclick="window.updateCaseStatus('${item.id}', 'approved')">Approve</button>
           <button class="button button-secondary" onclick="window.updateCaseStatus('${item.id}', 'rejected')">Reject</button>
           <button class="button button-secondary" onclick="window.viewAdminCase('${item.id}')">View</button>
+          <button class="button button-secondary" onclick="window.deleteAdminCase('${item.id}')">Delete</button>
         </div>
       </article>
     `).join('');
+
+    const emptyState = `
+      <div class="glass empty-state">
+        No ${escapeHtml(currentAdminFilter)} cases found.
+      </div>
+    `;
+
+    listRoot.innerHTML = toolbar + ((data || []).length ? cards : emptyState);
   }
 
   async function updateStatus(id, status) {
@@ -333,7 +366,33 @@ async function handleAdmin() {
     await renderAdminCases();
   }
 
+  async function deleteCase(id) {
+    const { data: item } = await supabaseClient
+      .from('cases')
+      .select('media_path')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (item?.media_path) {
+      await supabaseClient.storage.from('ufo-media').remove([item.media_path]);
+    }
+
+    const { error } = await supabaseClient
+      .from('cases')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      showNotice(notice, error.message, true);
+      return;
+    }
+
+    showNotice(notice, 'Case deleted.');
+    await renderAdminCases();
+  }
+
   window.updateCaseStatus = updateStatus;
+  window.deleteAdminCase = deleteCase;
 
   window.viewAdminCase = function (id) {
     const selected = (window.adminCases || []).find((item) => String(item.id) === String(id));
@@ -350,6 +409,11 @@ async function handleAdmin() {
     } else {
       alert(selected.title || 'Case found, but no modal exists on this page.');
     }
+  };
+
+  window.setAdminFilter = async function (filter) {
+    currentAdminFilter = filter;
+    await renderAdminCases();
   };
 
   async function refreshAuthView() {
