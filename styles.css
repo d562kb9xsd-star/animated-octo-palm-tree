@@ -1,194 +1,206 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UFO Archive Pro</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="stars"></div>
-  <div class="stars stars-2"></div>
-  <div class="glow glow-1"></div>
-  <div class="glow glow-2"></div>
+:root {
+  --bg: #050914;
+  --panel: rgba(10, 20, 40, 0.85);
+  --border: rgba(255,255,255,0.08);
+  --text: #eaf2ff;
+  --muted: #9fb0d0;
+  --accent: #6fd3ff;
+  --accent2: #b97dff;
+  --radius: 18px;
+}
 
-  <header class="site-header">
-    <div class="container site-header-inner">
-      <a href="index.html" class="brand">
-        <div class="brand-logo">◉</div>
-        <span data-site-name>UFO Archive Pro</span>
-      </a>
+* {
+  box-sizing: border-box;
+}
 
-      <nav class="nav">
-        <a href="index.html" class="active">Home</a>
-        <a href="archive.html">Archive</a>
-        <a href="submit.html">Submit</a>
-        <a href="admin.html">Admin</a>
-      </nav>
-    </div>
-  </header>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top, rgba(80,120,255,0.15), transparent),
+    url("https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1800&q=80") center/cover fixed;
+}
 
-  <main>
-    <section class="hero">
-      <div class="container hero-grid">
-        <div class="glass hero-main">
-          <div class="eyebrow">Evidence-led UFO reporting platform</div>
-          <h1>Report sightings, upload evidence, and publish reviewed cases professionally.</h1>
-          <p class="lead">
-            UFO Archive Pro is a moderated public archive for witness reports, media uploads, and case studies.
-            Visitors submit reports, moderators review the evidence, and approved sightings appear in the public archive.
-          </p>
+/* HEADER */
+.site-header {
+  position: sticky;
+  top: 0;
+  background: rgba(5,10,20,0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
 
-          <div class="hero-actions">
-            <a class="button button-primary" href="submit.html">Submit a case</a>
-            <a class="button button-secondary" href="archive.html">Browse archive</a>
-            <a class="button button-secondary" href="admin.html">Admin panel</a>
-          </div>
+.container {
+  width: min(1200px, 92%);
+  margin: auto;
+}
 
-          <div class="stats-grid">
-            <div class="glass stat-card">
-              <strong>Photos</strong>
-              <span class="muted">Collect image-based evidence</span>
-            </div>
-            <div class="glass stat-card">
-              <strong>Video</strong>
-              <span class="muted">Attach recorded sightings</span>
-            </div>
-            <div class="glass stat-card">
-              <strong>Cases</strong>
-              <span class="muted">Publish reviewed public reports</span>
-            </div>
-          </div>
-        </div>
+.site-header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-        <div class="glass hero-side">
-          <div class="signal-card">
-            <h3>Public submissions</h3>
-            <p class="muted">Capture titles, dates, locations, summaries, witness accounts, and media from one submission form.</p>
-          </div>
-          <div class="signal-card">
-            <h3>Moderated archive</h3>
-            <p class="muted">New entries arrive as pending, then admins approve, reject, or delete them from the dashboard.</p>
-          </div>
-          <div class="signal-card">
-            <h3>Controlled publishing</h3>
-            <p class="muted">Only approved reports reach the public archive, keeping your front-facing content cleaner and more credible.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+.brand {
+  display: flex;
+  gap: 10px;
+  font-weight: 700;
+}
 
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Featured latest approved sighting</h2>
-            <p>The newest approved report is highlighted here automatically.</p>
-          </div>
-        </div>
-        <div id="featured-case">
-          <div class="glass empty-state">Loading featured sighting...</div>
-        </div>
-      </div>
-    </section>
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg,var(--accent),var(--accent2));
+  display: grid;
+  place-items: center;
+  color: #000;
+}
 
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Latest approved sightings</h2>
-            <p>Recently approved public cases appear here automatically.</p>
-          </div>
-          <div class="inline-actions" style="margin-top:0;">
-            <a class="button button-secondary" href="archive.html">View full archive</a>
-          </div>
-        </div>
+.nav a {
+  margin-left: 14px;
+  color: var(--muted);
+  text-decoration: none;
+}
 
-        <div id="home-latest-cases" class="cases-grid">
-          <div class="glass empty-state">Loading latest approved reports...</div>
-        </div>
-      </div>
-    </section>
+.nav a:hover,
+.nav a.active {
+  color: var(--text);
+}
 
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <div>
-            <h2>Built for a serious-looking public archive</h2>
-            <p>Designed to feel more like a real evidence platform than a basic upload form.</p>
-          </div>
-        </div>
+/* HERO */
+.hero {
+  padding: 80px 0;
+}
 
-        <div class="cards-grid">
-          <article class="glass info-card">
-            <h3>Submission portal</h3>
-            <p class="muted">Visitors can send sightings, attach media, and include written case notes and witness details.</p>
-          </article>
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+}
 
-          <article class="glass info-card">
-            <h3>Admin moderation</h3>
-            <p class="muted">Moderators review incoming cases, inspect media, and decide what gets approved or rejected.</p>
-          </article>
+.glass {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  backdrop-filter: blur(12px);
+}
 
-          <article class="glass info-card">
-            <h3>Public archive</h3>
-            <p class="muted">Only approved sightings appear in the searchable archive for public browsing and viewing.</p>
-          </article>
-        </div>
-      </div>
-    </section>
+h1 {
+  font-size: 48px;
+  margin: 20px 0;
+}
 
-    <section class="section">
-      <div class="container">
-        <div class="glass page-hero cta-panel">
-          <div class="eyebrow">Start now</div>
-          <h2 style="margin-top:14px;">Ready to document the next sighting?</h2>
-          <p class="lead">Use the submission page for new reports, the archive for approved public cases, and the admin panel for moderation.</p>
+.lead {
+  color: var(--muted);
+  font-size: 18px;
+}
 
-          <div class="hero-actions">
-            <a class="button button-primary" href="submit.html">Open submission form</a>
-            <a class="button button-secondary" href="archive.html">Open archive</a>
-          </div>
-        </div>
-      </div>
-    </section>
+.hero-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
 
-    <footer class="footer">
-      <div class="container footer-grid">
-        <div>
-          <div class="brand footer-brand">
-            <div class="brand-logo">◉</div>
-            <span data-site-name>UFO Archive Pro</span>
-          </div>
-          <p class="muted">
-            A moderated public archive for UFO sightings, witness statements, uploaded evidence, and published case studies.
-          </p>
-        </div>
+/* BUTTONS */
+.button {
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
 
-        <div>
-          <h4>Navigation</h4>
-          <a href="index.html">Home</a>
-          <a href="archive.html">Archive</a>
-          <a href="submit.html">Submit</a>
-          <a href="admin.html">Admin</a>
-        </div>
+.button-primary {
+  background: linear-gradient(135deg,var(--accent),var(--accent2));
+  color: #000;
+}
 
-        <div>
-          <h4>Platform</h4>
-          <a href="archive.html">Approved sightings</a>
-          <a href="submit.html">Public submissions</a>
-          <a href="admin.html">Moderation panel</a>
-        </div>
-      </div>
+.button-secondary {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
 
-      <div class="container footer-bottom">
-        UFO Archive Pro · Moderated UFO reports, evidence, and public case publishing.
-      </div>
-    </footer>
-  </main>
+/* GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 14px;
+  margin-top: 20px;
+}
 
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
-</body>
-</html>
+.stat-card {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: rgba(255,255,255,0.05);
+}
+
+/* SECTION */
+.section {
+  padding: 40px 0;
+}
+
+.section h2 {
+  margin-bottom: 10px;
+}
+
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 18px;
+}
+
+/* CARDS */
+.case-card {
+  padding: 20px;
+}
+
+.case-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(100,200,255,0.3);
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.media {
+  width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 60px;
+  padding: 30px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--muted);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero-grid,
+  .cases-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+}
