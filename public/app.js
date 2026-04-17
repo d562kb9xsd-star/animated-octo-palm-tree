@@ -285,6 +285,8 @@ async function handleAdmin() {
     loginView.classList.remove('hidden');
   });
 }
+  });
+}
   }
 
   async function updateStatus(id, status) {
