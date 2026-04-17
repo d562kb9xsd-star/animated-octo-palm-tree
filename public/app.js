@@ -216,7 +216,6 @@ async function handleSubmit() {
     }
   });
 }
-
 async function handleAdmin() {
   const loginView = qs('#login-view');
   const adminView = qs('#admin-view');
@@ -261,7 +260,9 @@ async function handleAdmin() {
     loginView.classList.toggle('hidden', admin);
     adminView.classList.toggle('hidden', !admin);
 
-    if (admin) await renderAdminCases();
+    if (admin) {
+      await renderAdminCases();
+    }
   }
 
   loginForm.addEventListener('submit', async (e) => {
@@ -275,7 +276,7 @@ async function handleAdmin() {
       return;
     }
 
-    const { error } = await supabaseClient.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
@@ -285,26 +286,46 @@ async function handleAdmin() {
       return;
     }
 
-    await new Promise(r => setTimeout(r, 500)); // wait for session
+    const user = data?.user;
+    if (!user) {
+      showNotice(notice, 'Login failed', true);
+      return;
+    }
 
-if (!(await isAdmin())) {
-  showNotice(notice, 'Signed in, but this account is not marked as an admin in profiles.', true);
-  return;
-}
+    const { data: profile, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('id, email, role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (profileError) {
+      showNotice(notice, profileError.message, true);
+      return;
+    }
+
+    if (!profile || profile.role !== 'admin') {
+      showNotice(
+        notice,
+        `Signed in, but no admin profile matched this user. UID: ${user.id}`,
+        true
+      );
+      return;
     }
 
     showNotice(notice, 'Signed in.');
-    await refreshAuthView();
+    loginView.classList.add('hidden');
+    adminView.classList.remove('hidden');
+    await renderAdminCases();
   });
 
   logout?.addEventListener('click', async () => {
     await supabaseClient.auth.signOut();
-    await refreshAuthView();
+    adminView.classList.add('hidden');
+    loginView.classList.remove('hidden');
   });
 
   await refreshAuthView();
 }
-
 function bindArchiveFilters() {
   qs('#search')?.addEventListener('input', loadArchive);
   qs('#type-filter')?.addEventListener('change', loadArchive);
