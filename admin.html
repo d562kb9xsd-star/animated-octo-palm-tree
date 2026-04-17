@@ -1,143 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin · UFO Archive Pro</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin</title>
+
+<link rel="icon" href="favicon.svg"/>
+<link rel="stylesheet" href="styles.css"/>
 </head>
-<body class="page-alt">
-  <div class="stars"></div>
-  <div class="stars stars-2"></div>
-  <div class="glow glow-1"></div>
-  <div class="glow glow-2"></div>
-  <div class="scanline"></div>
 
-  <header class="site-header">
-    <div class="container site-header-inner">
-      <a href="index.html" class="brand">
-        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
-        <span data-site-name>UFO Archive Pro</span>
-      </a>
+<body>
 
-      <nav class="nav">
-        <a href="index.html">Home</a>
-        <a href="archive.html">Archive</a>
-        <a href="submit.html">Submit</a>
-        <a href="admin.html" class="active">Admin</a>
-      </nav>
-    </div>
-  </header>
+<div id="login-view">
+<form id="admin-login-form">
+<input id="admin-email" placeholder="Email"/>
+<input id="admin-password" type="password"/>
+<button>Login</button>
+</form>
+<div id="admin-notice"></div>
+</div>
 
-  <main class="page-shell">
-    <section class="section">
-      <div class="container">
-        <div class="glass page-hero">
-          <div class="eyebrow">Restricted moderation console</div>
-          <h1>Review, classify, approve, reject, and remove submitted case files</h1>
-          <p class="lead">
-            Moderator access only. Sign in to inspect incoming reports, review media and witness statements,
-            control release status, and manage the public archive.
-          </p>
-        </div>
-      </div>
-    </section>
+<div id="admin-view" class="hidden">
+<button id="logout-button">Logout</button>
+<div id="admin-cases"></div>
+</div>
 
-    <section class="section">
-      <div class="container">
-        <div id="login-view" class="glass auth-card">
-          <h2 style="margin-bottom: 10px;">Moderator sign in</h2>
-          <p class="muted" style="margin-top: 0; margin-bottom: 22px;">
-            Access to this console is restricted to authorised archive moderators.
-          </p>
-
-          <form id="admin-login-form">
-            <label>
-              Email
-              <input id="admin-email" type="email" placeholder="admin@example.com" required />
-            </label>
-
-            <label>
-              Password
-              <input id="admin-password" type="password" placeholder="Enter password" required />
-            </label>
-
-            <div class="hero-actions">
-              <button type="submit" class="button button-primary">Authorise access</button>
-            </div>
-
-            <div id="admin-notice" class="notice hidden"></div>
-          </form>
-        </div>
-
-        <div id="admin-view" class="hidden">
-          <div class="glass form-card" style="margin-bottom: 18px;">
-            <div class="section-head" style="margin-bottom: 0;">
-              <div>
-                <div class="eyebrow">Active console</div>
-                <h2 style="margin-top: 12px;">Moderation queue</h2>
-                <p class="muted">Filter by status, inspect evidence, and control publication of case files.</p>
-              </div>
-
-              <div class="inline-actions" style="margin-top: 0;">
-                <button id="logout-button" class="button button-secondary" type="button">Log out</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="admin-cases">
-            <div class="glass empty-state">Loading case queue...</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div class="container footer-grid">
-        <div>
-          <div class="brand footer-brand">
-            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
-            <span data-site-name>UFO Archive Pro</span>
-          </div>
-          <p class="muted">
-            Restricted review environment for moderator-led case validation, evidence inspection, and release control.
-          </p>
-        </div>
-
-        <div>
-          <h4>Navigation</h4>
-          <a href="index.html">Home</a>
-          <a href="archive.html">Archive</a>
-          <a href="submit.html">Submit</a>
-          <a href="admin.html">Admin</a>
-        </div>
-
-        <div>
-          <h4>Console tools</h4>
-          <a href="admin.html">Pending queue</a>
-          <a href="archive.html">Released files</a>
-          <a href="submit.html">Submission intake</a>
-        </div>
-      </div>
-
-      <div class="container footer-bottom">
-        UAP archive pro · restricted moderator console · controlled case release environment
-      </div>
-    </footer>
-  </main>
-
-  <div id="case-modal" class="modal hidden">
-    <div class="glass modal-card">
-      <div class="card-actions" style="justify-content:flex-end;">
-        <button class="button button-secondary" data-close-modal>Close</button>
-      </div>
-      <div id="case-modal-content"></div>
-    </div>
-  </div>
-
-  <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
