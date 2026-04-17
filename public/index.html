@@ -1,70 +1,83 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UFO Archive Pro</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · UFO Archive Pro</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="stars"></div>
-  <nav class="nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="index.html" data-site-name>UFO Archive Pro</a>
-      <div class="nav-links">
+<body class="page-alt">
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">🛸</span>
+        <span data-site-name>UFO Archive Pro</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
         <a href="archive.html">Archive</a>
         <a href="submit.html">Submit</a>
-        <a href="admin.html">Admin</a>
+        <a href="admin.html" class="active">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <div class="container admin-layout">
+      <section id="login-view" class="glass auth-card">
+        <div class="eyebrow">Admin sign in</div>
+        <h1 style="margin-top:16px;">Moderation dashboard access</h1>
+        <p class="lead">Sign in with your admin account to approve, reject, review, and delete cases.</p>
+
+        <form id="admin-login-form">
+          <label>
+            Email
+            <input id="admin-email" type="email" required placeholder="admin@example.com" />
+          </label>
+
+          <label>
+            Password
+            <input id="admin-password" type="password" required placeholder="••••••••" />
+          </label>
+
+          <div class="hero-actions">
+            <button type="submit" class="button button-primary">Sign in</button>
+          </div>
+
+          <div id="admin-notice" class="notice" style="display:block;"></div>
+        </form>
+      </section>
+
+      <section id="admin-view" class="hidden">
+        <div class="glass page-hero">
+          <div class="eyebrow">Admin panel</div>
+          <h1>Moderate pending and published cases</h1>
+          <p class="lead">Review submissions, inspect details, approve, reject, delete, and filter by status.</p>
+
+          <div class="hero-actions">
+            <button id="logout-button" class="button button-secondary">Log out</button>
+          </div>
+        </div>
+
+        <section class="section">
+          <div id="admin-cases" class="cases-grid"></div>
+        </section>
+      </section>
+    </div>
+
+    <div id="case-modal" class="modal hidden">
+      <div class="glass modal-card">
+        <div class="inline-actions" style="justify-content:flex-end; margin-top:0; margin-bottom:14px;">
+          <button class="button button-secondary modal-close" data-close-modal>Close</button>
+        </div>
+        <div id="case-modal-content"></div>
       </div>
     </div>
-  </nav>
 
-  <main>
-    <section class="hero wrap">
-      <div class="hero-copy">
-        <div class="pill">Supabase-powered evidence platform</div>
-        <h1>Upload UFO videos, images, documents, and full case studies.</h1>
-        <p>Turn sightings into a searchable public archive. Visitors can submit evidence, admins can moderate it, and approved reports become part of a polished online case library.</p>
-        <div class="cta-row">
-          <a class="button" href="submit.html">Submit a case</a>
-          <a class="button button-secondary" href="archive.html">Browse archive</a>
-        </div>
-        <div class="mini-stats">
-          <div><strong>4</strong><span>evidence types</span></div>
-          <div><strong>1</strong><span>admin dashboard</span></div>
-          <div><strong>∞</strong><span>cloud storage ready</span></div>
-        </div>
-      </div>
-      <div class="hero-card glass">
-        <h2>Included in this build</h2>
-        <ul class="feature-list">
-          <li>Public UFO archive with search and filters</li>
-          <li>Submission form with media upload</li>
-          <li>Case study text fields and witness summaries</li>
-          <li>Admin authentication and moderation tools</li>
-          <li>Supabase database and storage integration</li>
-          <li>Responsive dark design with a branded feel</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="wrap section-grid">
-      <article class="glass info-card">
-        <h3>Public archive</h3>
-        <p>Show approved sightings with thumbnails, dates, tags, locations, and written reports in a clean searchable layout.</p>
-      </article>
-      <article class="glass info-card">
-        <h3>Admin review queue</h3>
-        <p>Approve, reject, and remove submissions from one dashboard using Supabase Auth and row-level security.</p>
-      </article>
-      <article class="glass info-card">
-        <h3>Fast deployment</h3>
-        <p>Host it on Netlify or Vercel as a static site while Supabase handles storage, auth, and database queries.</p>
-      </article>
-    </section>
+    <div class="container footer">
+      Admin-only moderation interface for UFO Archive Pro.
+    </div>
   </main>
 
   <script src="config.js"></script>
