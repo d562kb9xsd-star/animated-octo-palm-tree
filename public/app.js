@@ -1,509 +1,588 @@
-const cfg = window.UFO_APP_CONFIG || {};
-const hasKeys =
-  cfg.supabaseUrl &&
-  cfg.supabaseUrl !== 'YOUR_SUPABASE_URL' &&
-  cfg.supabaseAnonKey &&
-  cfg.supabaseAnonKey !== 'YOUR_SUPABASE_ANON_KEY';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UFO Archive Pro</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    :root {
+      --bg: #07111f;
+      --bg2: #0d1b2e;
+      --card: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.12);
+      --text: #eef4ff;
+      --muted: #a9b8d1;
+      --accent: #79c7ff;
+      --accent2: #b77dff;
+      --success: #6ee7b7;
+      --danger: #ff8c8c;
+      --shadow: 0 20px 50px rgba(0,0,0,0.35);
+      --radius: 22px;
+      --max: 1180px;
+    }
 
-const supabaseClient = hasKeys
-  ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
-  : null;
+    * {
+      box-sizing: border-box;
+    }
 
-function qs(sel, root = document) {
-  return root.querySelector(sel);
-}
+    html {
+      scroll-behavior: smooth;
+    }
 
-function qsa(sel, root = document) {
-  return [...root.querySelectorAll(sel)];
-}
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(121,199,255,0.18), transparent 32%),
+        radial-gradient(circle at 80% 15%, rgba(183,125,255,0.16), transparent 24%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      min-height: 100vh;
+    }
 
-function escapeHtml(str = '') {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-function setSiteName() {
-  qsa('[data-site-name]').forEach((el) => {
-    el.textContent = cfg.siteName || 'UFO Archive Pro';
-  });
-}
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
 
-function formatDate(value) {
-  if (!value) return 'Unknown date';
-  return new Date(value).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-}
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
 
-function renderMedia(caseItem) {
-  if (!caseItem.media_url) return '';
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(6,12,22,0.72);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
 
-  if (caseItem.type === 'video') {
-    return `<video class="media" controls src="${caseItem.media_url}"></video>`;
-  }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 16px;
+    }
 
-  if (caseItem.type === 'image') {
-    return `<img class="media" src="${caseItem.media_url}" alt="${escapeHtml(caseItem.title || '')}">`;
-  }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
 
-  return `<a class="button button-secondary inline-button" href="${caseItem.media_url}" target="_blank" rel="noreferrer">Open attachment</a>`;
-}
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #04111f;
+      font-weight: 900;
+      box-shadow: 0 8px 25px rgba(121,199,255,0.35);
+    }
 
-function showNotice(el, msg, isError = false) {
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.toggle('error', isError);
-}
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-async function getCurrentUser() {
-  if (!supabaseClient) return null;
-  const { data } = await supabaseClient.auth.getUser();
-  return data.user || null;
-}
+    .nav-links a {
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--muted);
+      transition: 0.2s ease;
+      font-weight: 600;
+    }
 
-async function isAdmin() {
-  const user = await getCurrentUser();
-  if (!user) return false;
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+    }
 
-  const { data, error } = await supabaseClient
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
+    .hero {
+      padding: 72px 0 44px;
+    }
 
-  if (error) return false;
-  return data.role === 'admin';
-}
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 26px;
+      align-items: stretch;
+    }
 
-async function uploadMedia(file) {
-  if (!file) return { path: '', url: '' };
+    .hero-card,
+    .hero-side {
+      padding: 28px;
+    }
 
-  const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(121,199,255,0.22);
+      color: var(--accent);
+      background: rgba(121,199,255,0.08);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
 
-  const { data, error } = await supabaseClient
-    .storage
-    .from('ufo-media')
-    .upload(safeName, file, { upsert: false });
+    h1 {
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.02;
+      margin: 16px 0 16px;
+      letter-spacing: -1.4px;
+    }
 
-  if (error) throw error;
+    .hero p.lead {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 760px;
+      margin: 0 0 24px;
+    }
 
-  const { data: pub } = supabaseClient
-    .storage
-    .from('ufo-media')
-    .getPublicUrl(data.path);
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
 
-  return {
-    path: data.path,
-    url: pub.publicUrl
-  };
-}
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 14px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
 
-function caseDetails(caseItem) {
-  return `
-    <div class="case-detail">
-      <div class="badges">
-        <span class="badge">${escapeHtml(caseItem.type || '')}</span>
-        <span class="badge badge-${escapeHtml(caseItem.status || 'pending')}">${escapeHtml(caseItem.status || 'pending')}</span>
-        <span class="badge">${escapeHtml(caseItem.location || '')}</span>
+    .button-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #07111f;
+      box-shadow: 0 12px 28px rgba(121,199,255,0.28);
+    }
+
+    .button-primary:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-secondary {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+
+    .button-secondary:hover {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hero-side {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .signal {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .signal h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .signal p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .section {
+      padding: 24px 0 18px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 36px);
+      letter-spacing: -0.8px;
+    }
+
+    .section-header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature-card,
+    .case-card,
+    .steps-card {
+      padding: 22px;
+    }
+
+    .feature-card h3,
+    .case-card h3,
+    .steps-card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .feature-card p,
+    .case-card p,
+    .steps-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .step-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #05111f;
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+
+    .cta {
+      padding: 20px 0 72px;
+    }
+
+    .cta-card {
+      padding: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .cta-card h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .cta-card p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 700px;
+    }
+
+    .footer {
+      padding: 0 0 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .grid-3,
+      .steps,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 48px;
+      }
+
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-badge">🛸</span>
+        <span data-site-name>UFO Archive Pro</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="archive.html">Archive</a>
+        <a href="submit.html">Submit</a>
+        <a href="admin.html">Admin</a>
       </div>
-      <h2>${escapeHtml(caseItem.title || 'Untitled')}</h2>
-      <p class="meta">Observed: ${formatDate(caseItem.date_observed || caseItem.created_at)}</p>
-      <p>${escapeHtml(caseItem.summary || '')}</p>
-      ${renderMedia(caseItem)}
-      ${caseItem.description ? `<h3>Description</h3><p>${escapeHtml(caseItem.description)}</p>` : ''}
-      ${caseItem.case_study ? `<h3>Case study</h3><p>${escapeHtml(caseItem.case_study).replace(/\n/g, '<br>')}</p>` : ''}
-      ${caseItem.submitter_email ? `<p class="meta">Submitter email: ${escapeHtml(caseItem.submitter_email)}</p>` : ''}
     </div>
-  `;
-}
+  </nav>
 
-function bindDetailButtons(items) {
-  qsa('[data-view]').forEach((btn) => {
-    btn.onclick = () => {
-      const selected = items.find((item) => String(item.id) === String(btn.dataset.view));
-      if (!selected) return;
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="glass hero-card">
+          <div class="eyebrow">Public sightings archive • Evidence-led reporting</div>
+          <h1>Document sightings, upload evidence, and build a serious UFO case archive.</h1>
+          <p class="lead">
+            UFO Archive Pro is a public-facing reporting platform for videos, images, witness statements,
+            and case studies. Visitors can submit sightings, moderators can review evidence, and approved
+            reports appear in a searchable public archive.
+          </p>
 
-      const content = qs('#case-modal-content');
-      if (content) content.innerHTML = caseDetails(selected);
-
-      qs('#case-modal')?.classList.remove('hidden');
-    };
-  });
-}
-
-async function loadArchive() {
-  const root = qs('#archive-results');
-  if (!root) return;
-
-  if (!supabaseClient) {
-    root.innerHTML = '<div class="glass empty-state">Add your Supabase keys in config.js to load live data.</div>';
-    return;
-  }
-
-  const search = (qs('#search')?.value || '').toLowerCase().trim();
-  const type = qs('#type-filter')?.value || 'all';
-
-  let query = supabaseClient
-    .from('cases')
-    .select('*')
-    .eq('status', 'approved')
-    .order('created_at', { ascending: false });
-
-  if (type !== 'all') {
-    query = query.eq('type', type);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    root.innerHTML = `<div class="glass empty-state">${escapeHtml(error.message)}</div>`;
-    return;
-  }
-
-  const filtered = (data || []).filter((item) => {
-    if (!search) return true;
-
-    return [
-      item.title,
-      item.location,
-      item.summary,
-      item.description,
-      item.case_study,
-      ...(item.tags || [])
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .toLowerCase()
-      .includes(search);
-  });
-
-  if (!filtered.length) {
-    root.innerHTML = '<div class="glass empty-state">No approved cases match that search.</div>';
-    return;
-  }
-
-  root.innerHTML = filtered.map((item) => `
-    <article class="glass case-card" data-id="${item.id}">
-      <div class="card-top">
-        <div>
-          <div class="badges">
-            <span class="badge">${escapeHtml(item.type || '')}</span>
-            <span class="badge badge-${escapeHtml(item.status || 'approved')}">${escapeHtml(item.status || 'approved')}</span>
+          <div class="hero-actions">
+            <a class="button button-primary" href="submit.html">Submit a case</a>
+            <a class="button button-secondary" href="archive.html">Browse archive</a>
+            <a class="button button-secondary" href="admin.html">Admin panel</a>
           </div>
-          <h3>${escapeHtml(item.title || 'Untitled')}</h3>
-          <p class="meta">${escapeHtml(item.location || '')} • ${formatDate(item.date_observed || item.created_at)}</p>
-        </div>
-      </div>
 
-      <p>${escapeHtml(item.summary || '')}</p>
-      ${renderMedia(item)}
-
-      ${(item.tags || []).length
-        ? `<div class="badges">${item.tags.map((t) => `<span class="badge">#${escapeHtml(t)}</span>`).join('')}</div>`
-        : ''}
-
-      <div class="card-actions">
-        <button class="button button-secondary" data-view="${item.id}">View details</button>
-      </div>
-    </article>
-  `).join('');
-
-  bindDetailButtons(filtered);
-}
-
-function bindModalClose() {
-  qsa('[data-close-modal]').forEach((el) => {
-    el.addEventListener('click', () => {
-      qs('#case-modal')?.classList.add('hidden');
-    });
-  });
-}
-
-async function handleSubmit() {
-  const form = qs('#submit-form');
-  if (!form) return;
-
-  const notice = qs('#submit-notice');
-
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    if (!supabaseClient) {
-      showNotice(notice, 'Add your Supabase keys in config.js first.', true);
-      return;
-    }
-
-    try {
-      showNotice(notice, 'Uploading and saving your case...');
-
-      const formData = new FormData(form);
-      const file = formData.get('media');
-      const upload = file && file.size ? await uploadMedia(file) : { path: '', url: '' };
-      const tags = String(formData.get('tags') || '')
-        .split(',')
-        .map((v) => v.trim())
-        .filter(Boolean);
-      const user = await getCurrentUser();
-
-      const payload = {
-        title: String(formData.get('title') || '').trim(),
-        type: String(formData.get('type') || '').trim(),
-        date_observed: formData.get('date_observed') || null,
-        location: String(formData.get('location') || '').trim(),
-        summary: String(formData.get('summary') || '').trim(),
-        description: String(formData.get('description') || '').trim(),
-        case_study: String(formData.get('case_study') || '').trim(),
-        tags,
-        media_path: upload.path,
-        media_url: upload.url,
-        status: 'pending',
-        submitter_email: String(formData.get('submitter_email') || '').trim() || null,
-        created_by: user?.id || null
-      };
-
-      const { error } = await supabaseClient.from('cases').insert(payload);
-      if (error) throw error;
-
-      form.reset();
-      showNotice(notice, 'Submission received. It is now pending review.');
-    } catch (error) {
-      showNotice(notice, error.message || 'Submission failed.', true);
-    }
-  });
-}
-
-async function handleAdmin() {
-  const loginView = qs('#login-view');
-  const adminView = qs('#admin-view');
-  const loginForm = qs('#admin-login-form');
-  const notice = qs('#admin-notice');
-  const logout = qs('#logout-button');
-  const listRoot = qs('#admin-cases');
-
-  if (!loginView || !adminView || !loginForm) return;
-
-  let currentAdminFilter = 'pending';
-
-  async function renderAdminCases() {
-    let query = supabaseClient
-      .from('cases')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (currentAdminFilter !== 'all') {
-      query = query.eq('status', currentAdminFilter);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      showNotice(notice, error.message, true);
-      return;
-    }
-
-    if (!listRoot) return;
-
-    window.adminCases = data || [];
-
-    const toolbar = `
-      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-        <button class="button ${currentAdminFilter === 'pending' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('pending')">Pending</button>
-        <button class="button ${currentAdminFilter === 'approved' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('approved')">Approved</button>
-        <button class="button ${currentAdminFilter === 'rejected' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('rejected')">Rejected</button>
-        <button class="button ${currentAdminFilter === 'all' ? '' : 'button-secondary'}" onclick="window.setAdminFilter('all')">All</button>
-      </div>
-    `;
-
-    const cards = (data || []).map((item) => `
-      <article class="glass case-card">
-        <div class="badges" style="margin-bottom:8px;">
-          <span class="badge">${escapeHtml(item.type || '')}</span>
-          <span class="badge badge-${escapeHtml(item.status || 'pending')}">${escapeHtml(item.status || 'pending')}</span>
+          <div class="stats">
+            <div class="stat">
+              <strong>Images</strong>
+              <span>Upload photos and visual evidence</span>
+            </div>
+            <div class="stat">
+              <strong>Video</strong>
+              <span>Attach recordings and footage</span>
+            </div>
+            <div class="stat">
+              <strong>Cases</strong>
+              <span>Publish reviewed sightings publicly</span>
+            </div>
+          </div>
         </div>
 
-        <h3>${escapeHtml(item.title || 'Untitled')}</h3>
-        <p class="meta">${escapeHtml(item.location || '')} • ${formatDate(item.date_observed || item.created_at)}</p>
-        <p>${escapeHtml(item.description || item.summary || '')}</p>
-
-        ${item.media_url ? `<div style="margin:12px 0;">${renderMedia(item)}</div>` : ''}
-
-        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="button" onclick="window.updateCaseStatus('${item.id}', 'approved')">Approve</button>
-          <button class="button button-secondary" onclick="window.updateCaseStatus('${item.id}', 'rejected')">Reject</button>
-          <button class="button button-secondary" onclick="window.viewAdminCase('${item.id}')">View</button>
-          <button class="button button-secondary" onclick="window.deleteAdminCase('${item.id}')">Delete</button>
+        <div class="glass hero-side">
+          <div class="signal">
+            <h3>What gets stored</h3>
+            <p>Title, type, observed date, location, summary, witness description, case study notes, media, and moderation status.</p>
+          </div>
+          <div class="signal">
+            <h3>How moderation works</h3>
+            <p>Every new report enters the queue as pending. Admins can review, approve, reject, or remove items from the moderation dashboard.</p>
+          </div>
+          <div class="signal">
+            <h3>What the public sees</h3>
+            <p>Only approved reports show in the public archive, helping keep the front-facing site cleaner and easier to browse.</p>
+          </div>
         </div>
-      </article>
-    `).join('');
-
-    const emptyState = `
-      <div class="glass empty-state">
-        No ${escapeHtml(currentAdminFilter)} cases found.
       </div>
-    `;
+    </section>
 
-    listRoot.innerHTML = toolbar + ((data || []).length ? cards : emptyState);
-  }
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>Built for evidence-first reporting</h2>
+            <p>A clear flow for collecting sightings, reviewing them, and publishing only what you want visible to the public.</p>
+          </div>
+        </div>
 
-  async function updateStatus(id, status) {
-    const { error } = await supabaseClient
-      .from('cases')
-      .update({ status })
-      .eq('id', id);
+        <div class="grid-3">
+          <article class="glass feature-card">
+            <h3>Submission portal</h3>
+            <p>Visitors can submit sightings with details, dates, locations, written reports, and media attachments from one form.</p>
+            <div class="badge-row">
+              <span class="badge">Public intake</span>
+              <span class="badge">Media upload</span>
+              <span class="badge">Case notes</span>
+            </div>
+          </article>
 
-    if (error) {
-      showNotice(notice, error.message, true);
-      return;
-    }
+          <article class="glass feature-card">
+            <h3>Moderation dashboard</h3>
+            <p>Admins can log in, review pending cases, open details, approve valid submissions, reject weak ones, or remove spam entirely.</p>
+            <div class="badge-row">
+              <span class="badge">Approve</span>
+              <span class="badge">Reject</span>
+              <span class="badge">Delete</span>
+            </div>
+          </article>
 
-    showNotice(notice, `Case ${status}.`);
-    await renderAdminCases();
-  }
+          <article class="glass feature-card">
+            <h3>Public archive</h3>
+            <p>Approved cases appear in the archive where visitors can browse sightings, search reports, and inspect evidence.</p>
+            <div class="badge-row">
+              <span class="badge">Approved only</span>
+              <span class="badge">Searchable</span>
+              <span class="badge">Clean display</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
-  async function deleteCase(id) {
-    const { data: item } = await supabaseClient
-      .from('cases')
-      .select('media_path')
-      .eq('id', id)
-      .maybeSingle();
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>How the site works</h2>
+            <p>A simple workflow that keeps the public-facing archive separate from your moderation queue.</p>
+          </div>
+        </div>
 
-    if (item?.media_path) {
-      await supabaseClient.storage.from('ufo-media').remove([item.media_path]);
-    }
+        <div class="steps">
+          <article class="glass steps-card">
+            <div class="step-number">1</div>
+            <h3>Someone submits a sighting</h3>
+            <p>They fill out the form, upload evidence, and send in the report for review.</p>
+          </article>
 
-    const { error } = await supabaseClient
-      .from('cases')
-      .delete()
-      .eq('id', id);
+          <article class="glass steps-card">
+            <div class="step-number">2</div>
+            <h3>Admin reviews the evidence</h3>
+            <p>You open the admin panel, inspect the case, and decide whether to approve, reject, or remove it.</p>
+          </article>
 
-    if (error) {
-      showNotice(notice, error.message, true);
-      return;
-    }
+          <article class="glass steps-card">
+            <div class="step-number">3</div>
+            <h3>Approved cases go public</h3>
+            <p>Only approved items show in the archive, keeping the public side more controlled and credible.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-    showNotice(notice, 'Case deleted.');
-    await renderAdminCases();
-  }
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>What this homepage should feel like</h2>
+            <p>This version is designed to feel more like a real platform than a placeholder page.</p>
+          </div>
+        </div>
 
-  window.updateCaseStatus = updateStatus;
-  window.deleteAdminCase = deleteCase;
+        <div class="grid-3">
+          <article class="glass case-card">
+            <h3>Professional landing page</h3>
+            <p>A cleaner introduction with stronger navigation and clearer entry points to submit, browse, or moderate.</p>
+          </article>
+          <article class="glass case-card">
+            <h3>Stronger branding</h3>
+            <p>More confident wording and a clearer identity for the archive, without changing the rest of your site structure.</p>
+          </article>
+          <article class="glass case-card">
+            <h3>Ready for expansion</h3>
+            <p>You can later add counters, featured sightings, maps, timelines, or latest approved reports to this same layout.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
-  window.viewAdminCase = function (id) {
-    const selected = (window.adminCases || []).find((item) => String(item.id) === String(id));
-    if (!selected) return;
+    <section class="cta">
+      <div class="container">
+        <div class="glass cta-card">
+          <div>
+            <h2>Start documenting new reports now</h2>
+            <p>Use the submission page for new sightings, the archive for approved public cases, and the admin panel for moderation.</p>
+          </div>
 
-    const content = qs('#case-modal-content');
-    if (content) {
-      content.innerHTML = caseDetails(selected);
-    }
+          <div class="hero-actions">
+            <a class="button button-primary" href="submit.html">Open submission form</a>
+            <a class="button button-secondary" href="archive.html">Open archive</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    const modal = qs('#case-modal');
-    if (modal) {
-      modal.classList.remove('hidden');
-    } else {
-      alert(selected.title || 'Case found, but no modal exists on this page.');
-    }
-  };
+    <div class="container footer">
+      <div>UFO Archive Pro · Public reporting, evidence review, and moderated case publishing.</div>
+    </div>
+  </main>
 
-  window.setAdminFilter = async function (filter) {
-    currentAdminFilter = filter;
-    await renderAdminCases();
-  };
-
-  async function refreshAuthView() {
-    if (!supabaseClient) {
-      loginView.classList.remove('hidden');
-      adminView.classList.add('hidden');
-      showNotice(notice, 'Supabase not configured', true);
-      return;
-    }
-
-    const admin = await isAdmin();
-    loginView.classList.toggle('hidden', admin);
-    adminView.classList.toggle('hidden', !admin);
-
-    if (admin) {
-      await renderAdminCases();
-    }
-  }
-
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const email = qs('#admin-email')?.value?.trim();
-    const password = qs('#admin-password')?.value;
-
-    if (!supabaseClient) {
-      showNotice(notice, 'Supabase not configured', true);
-      return;
-    }
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      showNotice(notice, error.message, true);
-      return;
-    }
-
-    const user = data?.user;
-    if (!user) {
-      showNotice(notice, 'Login failed', true);
-      return;
-    }
-
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('id, email, role')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    if (profileError) {
-      showNotice(notice, profileError.message, true);
-      return;
-    }
-
-    if (!profile || profile.role !== 'admin') {
-      showNotice(
-        notice,
-        `Signed in, but no admin profile matched this user. UID: ${user.id}`,
-        true
-      );
-      return;
-    }
-
-    showNotice(notice, 'Signed in.');
-    loginView.classList.add('hidden');
-    adminView.classList.remove('hidden');
-    await renderAdminCases();
-  });
-
-  logout?.addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    adminView.classList.add('hidden');
-    loginView.classList.remove('hidden');
-    showNotice(notice, '');
-  });
-
-  await refreshAuthView();
-}
-
-function bindArchiveFilters() {
-  qs('#search')?.addEventListener('input', loadArchive);
-  qs('#type-filter')?.addEventListener('change', loadArchive);
-}
-
-setSiteName();
-bindModalClose();
-bindArchiveFilters();
-loadArchive();
-handleSubmit();
-handleAdmin();
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
