@@ -11,11 +11,12 @@
   <div class="stars stars-2"></div>
   <div class="glow glow-1"></div>
   <div class="glow glow-2"></div>
+  <div class="scanline"></div>
 
   <header class="site-header">
     <div class="container site-header-inner">
       <a href="index.html" class="brand">
-        <div class="brand-logo">◉</div>
+        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
         <span data-site-name>UFO Archive Pro</span>
       </a>
 
@@ -32,10 +33,11 @@
     <section class="section">
       <div class="container">
         <div class="glass page-hero">
-          <div class="eyebrow">Public case archive</div>
-          <h1>Browse approved sightings and reviewed evidence.</h1>
+          <div class="eyebrow">Released public case files</div>
+          <h1>Approved sightings and evidence archive</h1>
           <p class="lead">
-            Search the public archive by keyword or filter by media type. Only approved cases appear here.
+            Browse moderated public reports, filter by media type, search locations and case descriptions,
+            and inspect only approved published files.
           </p>
         </div>
       </div>
@@ -44,17 +46,18 @@
     <section class="section">
       <div class="container">
         <div class="glass archive-toolbar">
-          <input id="search" type="text" placeholder="Search by title, location, summary, tags..." />
+          <input id="search" type="text" placeholder="Search title, location, summary, tags..." />
           <select id="type-filter">
-            <option value="all">All types</option>
-            <option value="image">Images</option>
-            <option value="video">Videos</option>
-            <option value="document">Documents</option>
+            <option value="all">All file types</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="document">Document</option>
+            <option value="report">Report</option>
           </select>
         </div>
 
         <div id="archive-results" class="cases-grid">
-          <div class="glass empty-state">Loading approved sightings...</div>
+          <div class="glass empty-state">Loading approved case files...</div>
         </div>
       </div>
     </section>
@@ -63,11 +66,11 @@
       <div class="container footer-grid">
         <div>
           <div class="brand footer-brand">
-            <div class="brand-logo">◉</div>
+            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
             <span data-site-name>UFO Archive Pro</span>
           </div>
           <p class="muted">
-            Approved public sightings, case notes, and uploaded evidence from a moderated reporting platform.
+            Public archive of approved UAP sightings, witness reports, uploaded evidence, and released case notes.
           </p>
         </div>
 
@@ -80,15 +83,15 @@
         </div>
 
         <div>
-          <h4>Archive</h4>
-          <a href="archive.html">Latest cases</a>
-          <a href="submit.html">Report a sighting</a>
-          <a href="admin.html">Moderation login</a>
+          <h4>Archive tools</h4>
+          <a href="archive.html">Released files</a>
+          <a href="submit.html">Submit new report</a>
+          <a href="admin.html">Moderation console</a>
         </div>
       </div>
 
       <div class="container footer-bottom">
-        UFO Archive Pro · Public archive of approved UFO reports.
+        UAP archive pro · approved public release database · searchable case index
       </div>
     </footer>
   </main>
