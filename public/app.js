@@ -9,8 +9,13 @@ const supabaseClient = hasKeys
   ? window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey)
   : null;
 
-function qs(sel, root = document) { return root.querySelector(sel); }
-function qsa(sel, root = document) { return [...root.querySelectorAll(sel)]; }
+function qs(sel, root = document) {
+  return root.querySelector(sel);
+}
+
+function qsa(sel, root = document) {
+  return [...root.querySelectorAll(sel)];
+}
 
 function escapeHtml(str = '') {
   return String(str)
@@ -22,7 +27,7 @@ function escapeHtml(str = '') {
 }
 
 function setSiteName() {
-  qsa('[data-site-name]').forEach(el => {
+  qsa('[data-site-name]').forEach((el) => {
     el.textContent = cfg.siteName || 'UFO Archive Pro';
   });
 }
@@ -38,12 +43,15 @@ function formatDate(value) {
 
 function renderMedia(caseItem) {
   if (!caseItem.media_url) return '';
+
   if (caseItem.type === 'video') {
     return `<video class="media" controls src="${caseItem.media_url}"></video>`;
   }
+
   if (caseItem.type === 'image') {
-    return `<img class="media" src="${caseItem.media_url}" alt="${escapeHtml(caseItem.title)}">`;
+    return `<img class="media" src="${caseItem.media_url}" alt="${escapeHtml(caseItem.title || '')}">`;
   }
+
   return `<a class="button button-secondary inline-button" href="${caseItem.media_url}" target="_blank" rel="noreferrer">Open attachment</a>`;
 }
 
@@ -77,6 +85,7 @@ async function uploadMedia(file) {
   if (!file) return { path: '', url: '' };
 
   const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+
   const { data, error } = await supabaseClient
     .storage
     .from('ufo-media')
@@ -89,7 +98,43 @@ async function uploadMedia(file) {
     .from('ufo-media')
     .getPublicUrl(data.path);
 
-  return { path: data.path, url: pub.publicUrl };
+  return {
+    path: data.path,
+    url: pub.publicUrl
+  };
+}
+
+function caseDetails(caseItem) {
+  return `
+    <div class="case-detail">
+      <div class="badges">
+        <span class="badge">${escapeHtml(caseItem.type || '')}</span>
+        <span class="badge badge-${escapeHtml(caseItem.status || 'pending')}">${escapeHtml(caseItem.status || 'pending')}</span>
+        <span class="badge">${escapeHtml(caseItem.location || '')}</span>
+      </div>
+      <h2>${escapeHtml(caseItem.title || 'Untitled')}</h2>
+      <p class="meta">Observed: ${formatDate(caseItem.date_observed || caseItem.created_at)}</p>
+      <p>${escapeHtml(caseItem.summary || '')}</p>
+      ${renderMedia(caseItem)}
+      ${caseItem.description ? `<h3>Description</h3><p>${escapeHtml(caseItem.description)}</p>` : ''}
+      ${caseItem.case_study ? `<h3>Case study</h3><p>${escapeHtml(caseItem.case_study).replace(/\n/g, '<br>')}</p>` : ''}
+      ${caseItem.submitter_email ? `<p class="meta">Submitter email: ${escapeHtml(caseItem.submitter_email)}</p>` : ''}
+    </div>
+  `;
+}
+
+function bindDetailButtons(items) {
+  qsa('[data-view]').forEach((btn) => {
+    btn.onclick = () => {
+      const selected = items.find((item) => String(item.id) === String(btn.dataset.view));
+      if (!selected) return;
+
+      const content = qs('#case-modal-content');
+      if (content) content.innerHTML = caseDetails(selected);
+
+      qs('#case-modal')?.classList.remove('hidden');
+    };
+  });
 }
 
 async function loadArchive() {
@@ -110,7 +155,9 @@ async function loadArchive() {
     .eq('status', 'approved')
     .order('created_at', { ascending: false });
 
-  if (type !== 'all') query = query.eq('type', type);
+  if (type !== 'all') {
+    query = query.eq('type', type);
+  }
 
   const { data, error } = await query;
 
@@ -119,8 +166,9 @@ async function loadArchive() {
     return;
   }
 
-  const filtered = (data || []).filter(item => {
+  const filtered = (data || []).filter((item) => {
     if (!search) return true;
+
     return [
       item.title,
       item.location,
@@ -140,27 +188,40 @@ async function loadArchive() {
     return;
   }
 
-  root.innerHTML = filtered.map(item => `
+  root.innerHTML = filtered.map((item) => `
     <article class="glass case-card" data-id="${item.id}">
       <div class="card-top">
         <div>
           <div class="badges">
-            <span class="badge">${escapeHtml(item.type)}</span>
-            <span class="badge badge-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span>
+            <span class="badge">${escapeHtml(item.type || '')}</span>
+            <span class="badge badge-${escapeHtml(item.status || 'approved')}">${escapeHtml(item.status || 'approved')}</span>
           </div>
-          <h3>${escapeHtml(item.title)}</h3>
-          <p class="meta">${escapeHtml(item.location)} • ${formatDate(item.date_observed || item.created_at)}</p>
+          <h3>${escapeHtml(item.title || 'Untitled')}</h3>
+          <p class="meta">${escapeHtml(item.location || '')} • ${formatDate(item.date_observed || item.created_at)}</p>
         </div>
       </div>
+
       <p>${escapeHtml(item.summary || '')}</p>
       ${renderMedia(item)}
+
+      ${(item.tags || []).length
+        ? `<div class="badges">${item.tags.map((t) => `<span class="badge">#${escapeHtml(t)}</span>`).join('')}</div>`
+        : ''}
+
+      <div class="card-actions">
+        <button class="button button-secondary" data-view="${item.id}">View details</button>
+      </div>
     </article>
   `).join('');
+
+  bindDetailButtons(filtered);
 }
 
 function bindModalClose() {
-  qsa('[data-close-modal]').forEach(el => {
-    el.addEventListener('click', () => qs('#case-modal')?.classList.add('hidden'));
+  qsa('[data-close-modal]').forEach((el) => {
+    el.addEventListener('click', () => {
+      qs('#case-modal')?.classList.add('hidden');
+    });
   });
 }
 
@@ -186,7 +247,7 @@ async function handleSubmit() {
       const upload = file && file.size ? await uploadMedia(file) : { path: '', url: '' };
       const tags = String(formData.get('tags') || '')
         .split(',')
-        .map(v => v.trim())
+        .map((v) => v.trim())
         .filter(Boolean);
       const user = await getCurrentUser();
 
@@ -216,6 +277,7 @@ async function handleSubmit() {
     }
   });
 }
+
 async function handleAdmin() {
   const loginView = qs('#login-view');
   const adminView = qs('#admin-view');
@@ -226,29 +288,71 @@ async function handleAdmin() {
 
   if (!loginView || !adminView || !loginForm) return;
 
-  async function updateStatus(id, status) {
-  const { error } = await supabaseClient
-    .from('cases')
-    .update({ status })
-    .eq('id', id);
+  async function renderAdminCases() {
+    const { data, error } = await supabaseClient
+      .from('cases')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    alert(error.message);
-    return;
+    if (error) {
+      showNotice(notice, error.message, true);
+      return;
+    }
+
+    if (!listRoot) return;
+
+    listRoot.innerHTML = (data || []).map((item) => `
+      <article class="glass case-card">
+        <h3>${escapeHtml(item.title || 'Untitled')}</h3>
+        <p>${escapeHtml(item.description || item.summary || '')}</p>
+        <p><strong>Status:</strong> ${escapeHtml(item.status || 'pending')}</p>
+
+        <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="button" data-approve="${item.id}">Approve</button>
+          <button class="button button-secondary" data-reject="${item.id}">Reject</button>
+          <button class="button button-secondary" data-view-admin="${item.id}">View</button>
+        </div>
+      </article>
+    `).join('');
+
+    qsa('[data-approve]', listRoot).forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        await updateStatus(btn.dataset.approve, 'approved');
+      });
+    });
+
+    qsa('[data-reject]', listRoot).forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        await updateStatus(btn.dataset.reject, 'rejected');
+      });
+    });
+
+    qsa('[data-view-admin]', listRoot).forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const selected = (data || []).find((item) => String(item.id) === String(btn.dataset.viewAdmin));
+        if (!selected) return;
+
+        const content = qs('#case-modal-content');
+        if (content) content.innerHTML = caseDetails(selected);
+
+        qs('#case-modal')?.classList.remove('hidden');
+      });
+    });
   }
 
-  await renderAdminCases();
-}
+  async function updateStatus(id, status) {
+    const { error } = await supabaseClient
+      .from('cases')
+      .update({ status })
+      .eq('id', id);
 
-    if (listRoot) {
-      listRoot.innerHTML = (data || []).map(item => `
-        <article class="glass case-card">
-          <h3>${escapeHtml(item.title || 'Untitled')}</h3>
-          <p>${escapeHtml(item.description || '')}</p>
-          <p><strong>Status:</strong> ${escapeHtml(item.status || 'pending')}</p>
-        </article>
-      `).join('');
+    if (error) {
+      showNotice(notice, error.message, true);
+      return;
     }
+
+    showNotice(notice, `Case ${status}.`);
+    await renderAdminCases();
   }
 
   async function refreshAuthView() {
@@ -325,10 +429,12 @@ async function handleAdmin() {
     await supabaseClient.auth.signOut();
     adminView.classList.add('hidden');
     loginView.classList.remove('hidden');
+    showNotice(notice, '');
   });
 
   await refreshAuthView();
 }
+
 function bindArchiveFilters() {
   qs('#search')?.addEventListener('input', loadArchive);
   qs('#type-filter')?.addEventListener('change', loadArchive);
