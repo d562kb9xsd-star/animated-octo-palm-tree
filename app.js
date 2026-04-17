@@ -137,6 +137,68 @@ function bindDetailButtons(items) {
   });
 }
 
+async function loadFeaturedCases() {
+  const featuredRoot = qs('#featured-case');
+  const latestRoot = qs('#home-latest-cases');
+  if (!featuredRoot || !latestRoot || !supabaseClient) return;
+
+  const { data, error } = await supabaseClient
+    .from('cases')
+    .select('*')
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (error) {
+    featuredRoot.innerHTML = `<div class="glass empty-state">${escapeHtml(error.message)}</div>`;
+    latestRoot.innerHTML = `<div class="glass empty-state">${escapeHtml(error.message)}</div>`;
+    return;
+  }
+
+  if (!data || !data.length) {
+    featuredRoot.innerHTML = `<div class="glass empty-state">No approved sightings published yet.</div>`;
+    latestRoot.innerHTML = `<div class="glass empty-state">Approve more cases to populate this section.</div>`;
+    return;
+  }
+
+  const featured = data[0];
+  const latest = data.slice(1);
+
+  featuredRoot.innerHTML = `
+    <article class="glass case-card">
+      <div class="badges">
+        <span class="badge">${escapeHtml(featured.type || '')}</span>
+        <span class="badge badge-approved">${escapeHtml(featured.status || 'approved')}</span>
+      </div>
+      <h3>${escapeHtml(featured.title || 'Untitled')}</h3>
+      <p class="meta">${escapeHtml(featured.location || '')} • ${formatDate(featured.date_observed || featured.created_at)}</p>
+      <p>${escapeHtml(featured.summary || '')}</p>
+      ${renderMedia(featured)}
+      <div class="card-actions">
+        <a class="button button-secondary" href="archive.html">Browse full archive</a>
+      </div>
+    </article>
+  `;
+
+  if (!latest.length) {
+    latestRoot.innerHTML = `<div class="glass empty-state">Approve more cases to populate this section.</div>`;
+    return;
+  }
+
+  latestRoot.innerHTML = latest.map((item) => `
+    <article class="glass case-card">
+      <div class="badges">
+        <span class="badge">${escapeHtml(item.type || '')}</span>
+        <span class="badge badge-approved">${escapeHtml(item.status || 'approved')}</span>
+      </div>
+      <h3>${escapeHtml(item.title || 'Untitled')}</h3>
+      <p class="meta">${escapeHtml(item.location || '')} • ${formatDate(item.date_observed || item.created_at)}</p>
+      <p>${escapeHtml(item.summary || '')}</p>
+      ${renderMedia(item)}
+    </article>
+  `).join('');
+}
+
 async function loadArchive() {
   const root = qs('#archive-results');
   if (!root) return;
@@ -494,5 +556,6 @@ setSiteName();
 bindModalClose();
 bindArchiveFilters();
 loadArchive();
+loadFeaturedCases();
 handleSubmit();
 handleAdmin();
