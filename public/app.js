@@ -226,16 +226,19 @@ async function handleAdmin() {
 
   if (!loginView || !adminView || !loginForm) return;
 
-  async function renderAdminCases() {
-    const { data, error } = await supabaseClient
-      .from('cases')
-      .select('*')
-      .order('created_at', { ascending: false });
+  async function updateStatus(id, status) {
+  const { error } = await supabaseClient
+    .from('cases')
+    .update({ status })
+    .eq('id', id);
 
-    if (error) {
-      showNotice(notice, error.message, true);
-      return;
-    }
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  await renderAdminCases();
+}
 
     if (listRoot) {
       listRoot.innerHTML = (data || []).map(item => `
