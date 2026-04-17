@@ -301,6 +301,8 @@ async function handleAdmin() {
 
     if (!listRoot) return;
 
+    window.adminCases = data || [];
+
     listRoot.innerHTML = (data || []).map((item) => `
       <article class="glass case-card">
         <h3>${escapeHtml(item.title || 'Untitled')}</h3>
@@ -308,36 +310,12 @@ async function handleAdmin() {
         <p><strong>Status:</strong> ${escapeHtml(item.status || 'pending')}</p>
 
         <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="button" data-approve="${item.id}">Approve</button>
-          <button class="button button-secondary" data-reject="${item.id}">Reject</button>
-          <button class="button button-secondary" data-view-admin="${item.id}">View</button>
+          <button class="button" onclick="window.updateCaseStatus('${item.id}', 'approved')">Approve</button>
+          <button class="button button-secondary" onclick="window.updateCaseStatus('${item.id}', 'rejected')">Reject</button>
+          <button class="button button-secondary" onclick="window.viewAdminCase('${item.id}')">View</button>
         </div>
       </article>
     `).join('');
-
-    qsa('[data-approve]', listRoot).forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        await updateStatus(btn.dataset.approve, 'approved');
-      });
-    });
-
-    qsa('[data-reject]', listRoot).forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        await updateStatus(btn.dataset.reject, 'rejected');
-      });
-    });
-
-    qsa('[data-view-admin]', listRoot).forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const selected = (data || []).find((item) => String(item.id) === String(btn.dataset.viewAdmin));
-        if (!selected) return;
-
-        const content = qs('#case-modal-content');
-        if (content) content.innerHTML = caseDetails(selected);
-
-        qs('#case-modal')?.classList.remove('hidden');
-      });
-    });
   }
 
   async function updateStatus(id, status) {
@@ -354,6 +332,25 @@ async function handleAdmin() {
     showNotice(notice, `Case ${status}.`);
     await renderAdminCases();
   }
+
+  window.updateCaseStatus = updateStatus;
+
+  window.viewAdminCase = function (id) {
+    const selected = (window.adminCases || []).find((item) => String(item.id) === String(id));
+    if (!selected) return;
+
+    const content = qs('#case-modal-content');
+    if (content) {
+      content.innerHTML = caseDetails(selected);
+    }
+
+    const modal = qs('#case-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    } else {
+      alert(selected.title || 'Case found, but no modal exists on this page.');
+    }
+  };
 
   async function refreshAuthView() {
     if (!supabaseClient) {
