@@ -285,9 +285,12 @@ async function handleAdmin() {
       return;
     }
 
-    if (!(await isAdmin())) {
-      showNotice(notice, 'Signed in, but this account is not marked as an admin in profiles.', true);
-      return;
+    await new Promise(r => setTimeout(r, 500)); // wait for session
+
+if (!(await isAdmin())) {
+  showNotice(notice, 'Signed in, but this account is not marked as an admin in profiles.', true);
+  return;
+}
     }
 
     showNotice(notice, 'Signed in.');
