@@ -1,1 +1,4 @@
-sb_publishable_5ImXLmCaWeRzVKx_rTdgkQ_h4_xqG_b
+window.UFO_APP_CONFIG = {
+  supabaseUrl: "https://fvqtmcwmfhwwbweowl.supabase.co",
+  supabaseAnonKey: "PASTE_THE_ufo_archive_PUBLISHABLE_KEY_HERE"
+};
