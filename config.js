@@ -1,12 +1,4 @@
-// UFO Archive Pro Configuration
-
-const UFO_APP_CONFIG = {
+window.UFO_APP_CONFIG = {
   supabaseUrl: "https://fvqtmcwmfhwwbweowl.supabase.co",
-  supabaseAnonKey: "sb_publishable_5ImXLmCaWeRzVKx_rTdgkQ_h4_xqG_b"
+  supabaseAnonKey: "PASTE_YOUR_UFO_ARCHIVE_PUBLISHABLE_KEY_HERE"
 };
-
-// Initialise Supabase client
-const supabaseClient = supabase.createClient(
-  UFO_APP_CONFIG.supabaseUrl,
-  UFO_APP_CONFIG.supabaseAnonKey
-);
