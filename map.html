@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Map · UFO Archive Pro</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="page-alt">
+  <div class="stars"></div>
+  <div class="stars stars-2"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <a href="index.html" class="brand">
+        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
+        <span>UFO Archive Pro</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="archive.html">Archive</a>
+        <a href="map.html" class="active">Map</a>
+        <a href="submit.html">Submit</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="section">
+      <div class="container">
+        <div class="glass page-hero">
+          <div class="eyebrow">Location view</div>
+          <h1>Approved sightings by location</h1>
+          <p class="lead">
+            This grid map groups approved sightings by place name. Click any case for the full case page.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div id="map-results" class="map-grid">
+          <div class="glass empty-state">Loading location data...</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand footer-brand">
+            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
+            <span>UFO Archive Pro</span>
+          </div>
+          <p class="muted">Approved sightings grouped by logged location.</p>
+        </div>
+
+        <div>
+          <h4>Navigation</h4>
+          <a href="index.html">Home</a>
+          <a href="archive.html">Archive</a>
+          <a href="map.html">Map</a>
+          <a href="submit.html">Submit</a>
+          <a href="admin.html">Admin</a>
+        </div>
+
+        <div>
+          <h4>Views</h4>
+          <a href="archive.html">Case archive</a>
+          <a href="map.html">Location map</a>
+          <a href="submit.html">New report</a>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        UAP archive pro · grouped sightings map
+      </div>
+    </footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
