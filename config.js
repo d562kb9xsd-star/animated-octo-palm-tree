@@ -1,4 +1,1 @@
-window.UFO_APP_CONFIG = {
-  supabaseUrl: "https://fvqtmcwmfhwwbweowl.supabase.co",
-  supabaseAnonKey: "PASTE_YOUR_UFO_ARCHIVE_PUBLISHABLE_KEY_HERE"
-};
+sb_publishable_5ImXLmCaWeRzVKx_rTdgkQ_h4_xqG_b
