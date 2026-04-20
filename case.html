@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Case File · UFO Archive Pro</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body class="page-alt">
+  <div class="stars"></div>
+  <div class="stars stars-2"></div>
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="scanline"></div>
+
+  <header class="site-header">
+    <div class="container site-header-inner">
+      <a href="index.html" class="brand">
+        <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
+        <span>UFO Archive Pro</span>
+      </a>
+
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="archive.html">Archive</a>
+        <a href="map.html">Map</a>
+        <a href="submit.html">Submit</a>
+        <a href="admin.html">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="section">
+      <div class="container">
+        <div id="case-page-content">
+          <div class="glass empty-state">Loading case file...</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer-grid">
+        <div>
+          <div class="brand footer-brand">
+            <img src="logo.svg" class="brand-logo" alt="UFO Archive Pro logo" />
+            <span>UFO Archive Pro</span>
+          </div>
+          <p class="muted">Full case file view for approved public reports.</p>
+        </div>
+
+        <div>
+          <h4>Navigation</h4>
+          <a href="index.html">Home</a>
+          <a href="archive.html">Archive</a>
+          <a href="map.html">Map</a>
+          <a href="submit.html">Submit</a>
+          <a href="admin.html">Admin</a>
+        </div>
+
+        <div>
+          <h4>Case access</h4>
+          <a href="archive.html">Back to archive</a>
+          <a href="map.html">Location map</a>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        UAP archive pro · individual case file view
+      </div>
+    </footer>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
