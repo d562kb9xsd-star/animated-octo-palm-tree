@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>UFO Archive Pro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
-<body style="font-family: Arial; max-width: 900px; margin: auto; padding: 40px;">
+<body style="font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px;">
 
   <h1>UFO Archive Pro</h1>
-
   <p>Case intake, evidence logging, map tracking, and controlled public release.</p>
 
   <h2>Stats</h2>
-
   <p><span id="approved-count">0</span> Approved cases</p>
   <p><span id="media-count">0</span> Cases with media</p>
   <p><span id="location-count">0</span> Locations logged</p>
 
-  <hr>
-
-  <h2>About</h2>
-  <p>
-    UFO Archive Pro is a moderated reporting platform for unidentified aerial phenomena.
-    Witnesses can submit sightings, and approved cases are published publicly.
-  </p>
-
-  <!-- SCRIPTS (ORDER IS CRITICAL) -->
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
-
 </body>
 </html>
