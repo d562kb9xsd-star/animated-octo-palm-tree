@@ -1,30 +1,52 @@
-const { supabaseUrl, supabaseAnonKey } = window.UFO_APP_CONFIG;
+const cfg = window.UFO_APP_CONFIG;
 
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+if (!cfg || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+  console.error("Missing Supabase config");
+} else {
+  const supabaseClient = window.supabase.createClient(
+    cfg.supabaseUrl,
+    cfg.supabaseAnonKey
+  );
 
-async function loadStats() {
-  try {
-    const { data, error } = await supabaseClient
-      .from("cases")
-      .select("*")
-      .eq("status", "approved");
+  async function loadStats() {
+    try {
+      const { data, error } = await supabaseClient
+        .from("cases")
+        .select("id, location, media_url, status");
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return;
+      if (error) {
+        console.error("Supabase error:", error);
+        return;
+      }
+
+      const approvedRows = (data || []).filter(
+        row => String(row.status).trim().toLowerCase() === "approved"
+      );
+
+      const approved = approvedRows.length;
+      const withMedia = approvedRows.filter(
+        row => row.media_url && String(row.media_url).trim() !== ""
+      ).length;
+      const locations = new Set(
+        approvedRows
+          .map(row => row.location)
+          .filter(value => value && String(value).trim() !== "")
+      ).size;
+
+      const approvedEl = document.getElementById("approved-count");
+      const mediaEl = document.getElementById("media-count");
+      const locationEl = document.getElementById("location-count");
+
+      if (approvedEl) approvedEl.textContent = approved;
+      if (mediaEl) mediaEl.textContent = withMedia;
+      if (locationEl) locationEl.textContent = locations;
+
+      console.log("Loaded rows:", data);
+      console.log("Approved rows:", approvedRows);
+    } catch (err) {
+      console.error("App error:", err);
     }
-
-    const approved = data.length;
-    const withMedia = data.filter(c => c.media_url).length;
-    const locations = new Set(data.map(c => c.location)).size;
-
-    document.getElementById("approved-count").textContent = approved;
-    document.getElementById("media-count").textContent = withMedia;
-    document.getElementById("location-count").textContent = locations;
-
-  } catch (err) {
-    console.error("App error:", err);
   }
-}
 
-loadStats();
+  loadStats();
+}
