@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UFO Archive</title>
+  <title>UFO Archive Pro</title>
 
   <style>
     body {
@@ -101,13 +101,11 @@
       <input type="text" placeholder="Search reports (coming soon)">
     </div>
 
-    <!-- THIS IS WHERE DATA WILL APPEAR -->
     <div id="archive-list"></div>
 
     <div id="debug"></div>
   </div>
 
-  <!-- CONFIG -->
   <script>
     window.UFO_APP_CONFIG = {
       supabaseUrl: "https://YOUR_PROJECT_ID.supabase.co",
@@ -115,8 +113,89 @@
     };
   </script>
 
-  <!-- MAIN SCRIPT -->
-  <script src="app.js"></script>
+  <script>
+    (async () => {
+      const debug = document.getElementById("debug");
+
+      function log(msg) {
+        if (debug) debug.textContent = msg;
+        console.log(msg);
+      }
+
+      try {
+        const baseUrl = window.UFO_APP_CONFIG.supabaseUrl.replace(/\/$/, "");
+        const apiKey = window.UFO_APP_CONFIG.supabaseAnonKey;
+
+        const headers = {
+          apikey: apiKey,
+          Authorization: "Bearer " + apiKey,
+          "Content-Type": "application/json"
+        };
+
+        log("Connecting...");
+
+        const url = baseUrl + "/rest/v1/cases?status=eq.approved&order=created_at.desc";
+
+        const res = await fetch(url, { headers });
+
+        if (!res.ok) {
+          const text = await res.text();
+          log("ERROR " + res.status + ": " + text);
+          return;
+        }
+
+        const data = await res.json();
+
+        log("Loaded " + data.length + " approved case(s)");
+
+        document.getElementById("approved").textContent = data.length;
+
+        const mediaCount = data.filter(
+          item => item.media_url || item.media_path
+        ).length;
+
+        document.getElementById("media").textContent = mediaCount;
+
+        const uniqueLocations = new Set(
+          data.map(item => item.location).filter(Boolean)
+        );
+
+        document.getElementById("locations").textContent = uniqueLocations.size;
+
+        const container = document.getElementById("archive-list");
+        container.innerHTML = "";
+
+        if (!data.length) {
+          container.innerHTML = "<p>No approved UFO reports yet.</p>";
+          return;
+        }
+
+        data.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "case-card";
+
+          const media = item.media_url
+            ? `<img src="${item.media_url}" style="max-width:100%;border-radius:10px;margin-top:10px;">`
+            : "";
+
+          card.innerHTML = `
+            <div style="padding:20px;border:1px solid rgba(255,255,255,0.08);border-radius:12px;background:rgba(255,255,255,0.02);">
+              <h3>${item.title || "No title"}</h3>
+              <p>${item.location || ""}</p>
+              <p>${item.summary || item.description || ""}</p>
+              ${media}
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+
+      } catch (e) {
+        console.error(e);
+        if (debug) debug.textContent = "ERROR: " + e.message;
+      }
+    })();
+  </script>
 
 </body>
 </html>
