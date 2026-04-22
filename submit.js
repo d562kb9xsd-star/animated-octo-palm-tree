@@ -16,6 +16,7 @@
       const fileInput = document.getElementById("file");
       const file = fileInput.files[0];
 
+      // ✅ Upload file if selected
       if (file) {
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const fileName = `${Date.now()}-${safeName}`;
@@ -34,15 +35,16 @@
           }
         );
 
-        const uploadText = await uploadRes.text();
         if (!uploadRes.ok) {
-          log(`Upload failed (${uploadRes.status})\n${uploadText}`);
+          const err = await uploadRes.text();
+          log("Upload failed: " + err);
           return;
         }
 
         mediaUrl = `${supabaseUrl}/storage/v1/object/public/ufo-media/${fileName}`;
       }
 
+      // ✅ Submit to database
       const payload = {
         title: document.getElementById("title").value.trim(),
         description: document.getElementById("description").value.trim(),
@@ -62,14 +64,14 @@
         body: JSON.stringify(payload)
       });
 
-      const text = await res.text();
       if (!res.ok) {
-        log(`Submit failed (${res.status})\n${text}`);
+        const err = await res.text();
+        log("Submit failed: " + err);
         return;
       }
 
       form.reset();
-      log("Success. Report submitted as pending with photo upload.");
+      log("Success. Report submitted with photo.");
     } catch (err) {
       log("Error: " + err.message);
     }
