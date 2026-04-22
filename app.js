@@ -6,27 +6,24 @@ const supabase = window.supabase.createClient(
 );
 
 async function loadStats() {
-  try {
-    const { data, error } = await supabase
-      .from("cases")
-      .select("*");
+  const { data, error } = await supabase
+    .from("cases")
+    .select("status, media_url, location");
 
-    if (error) {
-      console.error("Supabase error:", error);
-      return;
-    }
-
-    const approved = data.filter(c => c.status === "approved").length;
-    const media = data.filter(c => c.media_url).length;
-    const locations = data.filter(c => c.location).length;
-
-    document.getElementById("approved").innerText = approved;
-    document.getElementById("media").innerText = media;
-    document.getElementById("locations").innerText = locations;
-
-  } catch (err) {
-    console.error("Error:", err);
+  if (error) {
+    console.error(error);
+    return;
   }
+
+  console.log("DATA:", data); // 👈 THIS IS KEY
+
+  const approved = data.filter(x => x.status === "approved").length;
+  const media = data.filter(x => x.media_url && x.media_url !== "EMPTY").length;
+  const locations = data.filter(x => x.location).length;
+
+  document.getElementById("approved").innerText = approved;
+  document.getElementById("media").innerText = media;
+  document.getElementById("locations").innerText = locations;
 }
 
 loadStats();
