@@ -1,27 +1,41 @@
 const cfg = window.UFO_APP_CONFIG;
 
-const supabaseClient = window.supabase.createClient(
-  cfg.supabaseUrl,
-  cfg.supabaseAnonKey
-);
+if (!cfg || !cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+  console.error("Missing Supabase config");
+} else {
+  const supabaseClient = window.supabase.createClient(
+    cfg.supabaseUrl,
+    cfg.supabaseAnonKey
+  );
 
-async function loadStats() {
-  const { data, error } = await supabaseClient
-    .from("cases")
-    .select("status, media_url, location");
+  async function loadStats() {
+    try {
+      const { data, error } = await supabaseClient
+        .from("cases")
+        .select("status, media_url, location");
 
-  if (error) {
-    console.error(error);
-    return;
+      if (error) {
+        console.error("Supabase error:", error);
+        return;
+      }
+
+      const approved = data.filter(row => row.status === "approved").length;
+      const withMedia = data.filter(
+        row => row.media_url && row.media_url !== "EMPTY"
+      ).length;
+      const locations = new Set(
+        data
+          .filter(row => row.status === "approved" && row.location)
+          .map(row => row.location)
+      ).size;
+
+      document.getElementById("approved-count").textContent = approved;
+      document.getElementById("media-count").textContent = withMedia;
+      document.getElementById("location-count").textContent = locations;
+    } catch (err) {
+      console.error("App error:", err);
+    }
   }
 
-  const approved = data.filter(x => x.status === "approved").length;
-  const media = data.filter(x => x.media_url && x.media_url !== "EMPTY").length;
-  const locations = data.filter(x => x.location).length;
-
-  document.getElementById("approved").innerText = approved;
-  document.getElementById("media").innerText = media;
-  document.getElementById("locations").innerText = locations;
+  loadStats();
 }
-
-loadStats();
