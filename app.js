@@ -1,26 +1,12 @@
 window.addEventListener("load", async () => {
-  function setText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  }
+  const debug = document.getElementById("debug");
 
-  function showDebug(message) {
-    const box = document.getElementById("debug-box");
-    if (box) box.textContent = message;
+  function log(msg) {
+    if (debug) debug.textContent = msg;
   }
 
   try {
-    if (!window.UFO_APP_CONFIG) {
-      showDebug("Missing config.js");
-      return;
-    }
-
     const { supabaseUrl, supabaseAnonKey } = window.UFO_APP_CONFIG;
-
-    if (!supabaseUrl || !supabaseAnonKey) {
-      showDebug("Config is incomplete");
-      return;
-    }
 
     const res = await fetch(
       `${supabaseUrl}/rest/v1/cases?select=status,media_url,location`,
@@ -33,38 +19,24 @@ window.addEventListener("load", async () => {
     );
 
     if (!res.ok) {
-      showDebug(`HTTP error: ${res.status}`);
+      log(`HTTP error: ${res.status}`);
       return;
     }
 
     const data = await res.json();
 
     const approvedRows = data.filter(
-      row => String(row.status || "").trim().toLowerCase() === "approved"
+      r => String(r.status || "").trim().toLowerCase() === "approved"
     );
 
-    const approved = approvedRows.length;
-    const media = approvedRows.filter(
-      row => row.media_url && String(row.media_url).trim() !== "" && row.media_url !== "EMPTY"
-    ).length;
-    const locations = new Set(
-      approvedRows
-        .map(row => row.location)
-        .filter(v => v && String(v).trim() !== "")
-    ).size;
+    document.getElementById("approved-count").textContent = approvedRows.length;
+    document.getElementById("media-count").textContent =
+      approvedRows.filter(r => r.media_url && String(r.media_url).trim() !== "" && r.media_url !== "EMPTY").length;
+    document.getElementById("location-count").textContent =
+      new Set(approvedRows.map(r => r.location).filter(Boolean)).size;
 
-    setText("approved-count", approved);
-    setText("media-count", media);
-    setText("location-count", locations);
-
-    showDebug(
-      "Connected OK\n" +
-      `Total rows: ${data.length}\n` +
-      `Approved rows: ${approved}\n` +
-      `Rows with media: ${media}\n` +
-      `Unique locations: ${locations}`
-    );
+    log(`WORKING - rows: ${data.length}`);
   } catch (err) {
-    showDebug(`ERROR: ${err.message}`);
+    log(`ERROR: ${err.message}`);
   }
 });
