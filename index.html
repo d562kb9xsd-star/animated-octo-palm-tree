@@ -3,10 +3,18 @@
 <head>
   <title>UFO Archive</title>
 </head>
-<body style="font-family: Arial; max-width: 900px; margin: 40px auto;">
+
+<body style="font-family: Arial; background:#f5f5f5; margin:0;">
+
+<div style="max-width:1000px; margin:40px auto;">
 
 <h1>🛸 UFO Archive</h1>
-<div id="list">Loading...</div>
+
+<div id="list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap:20px;">
+Loading...
+</div>
+
+</div>
 
 <script src="config.js"></script>
 
@@ -30,25 +38,30 @@
   list.innerHTML = "";
 
   if (data.length === 0) {
-    list.innerHTML = "<p>No approved sightings yet</p>";
+    list.innerHTML = "<p>No sightings yet</p>";
     return;
   }
 
   data.forEach(item => {
     const div = document.createElement("div");
-    div.style.border = "1px solid #ccc";
-    div.style.padding = "12px";
-    div.style.marginBottom = "12px";
+
+    div.style.background = "white";
+    div.style.borderRadius = "10px";
+    div.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+    div.style.overflow = "hidden";
 
     div.innerHTML = `
-      <h3>${item.title}</h3>
-      <p>${item.description}</p>
-      <p><b>Location:</b> ${item.location}</p>
       ${
         item.media_url
-          ? `<img src="${item.media_url}" style="max-width:100%;">`
+          ? `<img src="${item.media_url}" style="width:100%; height:200px; object-fit:cover;">`
           : ""
       }
+
+      <div style="padding:15px">
+        <h3 style="margin:0 0 10px 0;">${item.title}</h3>
+        <p style="margin:0 0 10px 0; color:#555;">${item.description}</p>
+        <p style="margin:0; font-size:14px;"><b>📍 ${item.location}</b></p>
+      </div>
     `;
 
     list.appendChild(div);
