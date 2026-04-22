@@ -1,12 +1,12 @@
 const cfg = window.UFO_APP_CONFIG;
 
-const supabase = window.supabase.createClient(
+const supabaseClient = window.supabase.createClient(
   cfg.supabaseUrl,
   cfg.supabaseAnonKey
 );
 
 async function loadStats() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("cases")
     .select("status, media_url, location");
 
@@ -14,8 +14,6 @@ async function loadStats() {
     console.error(error);
     return;
   }
-
-  console.log("DATA:", data); // 👈 THIS IS KEY
 
   const approved = data.filter(x => x.status === "approved").length;
   const media = data.filter(x => x.media_url && x.media_url !== "EMPTY").length;
