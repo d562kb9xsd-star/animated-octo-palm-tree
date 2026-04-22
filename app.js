@@ -1,4 +1,13 @@
 (async () => {
+
+  const container = document.getElementById("archive-list");
+
+  // Safety check
+  if (!container) {
+    console.error("archive-list div not found");
+    return;
+  }
+
   try {
     console.log("Connecting to Supabase...");
 
@@ -8,42 +17,41 @@
     const res = await fetch(url, {
       headers: {
         apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
-        Authorization: "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey
+        Authorization: "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey,
+        "Content-Type": "application/json"
       }
     });
 
     if (!res.ok) {
-      const text = await res.text();
-      console.error("ERROR:", res.status, text);
+      const errorText = await res.text();
+      container.innerHTML = `<p style="color:red;">Error ${res.status}: ${errorText}</p>`;
       return;
     }
 
     const data = await res.json();
-    console.log("Loaded cases:", data);
 
-    const container = document.getElementById("archive-list");
+    console.log("Data received:", data);
 
-    if (!container) {
-      console.error("archive-list div not found!");
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p>No approved UFO reports found.</p>";
       return;
     }
 
-    container.innerHTML = "";
-
-    data.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "case";
-
-      div.innerHTML = `
-        <h3>${item.title || "No title"}</h3>
+    // Render cases
+    container.innerHTML = data.map(item => `
+      <div class="case">
+        <h3>${item.title || "Untitled report"}</h3>
         <p><strong>Location:</strong> ${item.location || "Unknown"}</p>
-        <p>${item.summary || ""}</p>
-      `;
+        <p><strong>Date:</strong> ${item.date_observed || "Unknown"}</p>
+        <p>${item.description || ""}</p>
+      </div>
+    `).join("");
 
-      container.appendChild(div);
-    });
+    console.log("SUCCESS: UFO reports loaded");
 
   } catch (err) {
-    console.error("JS Error:", err);
+    console.error("Fetch error:", err);
+    container.innerHTML = "<p style='color:red;'>Failed to load UFO reports.</p>";
   }
+
 })();
