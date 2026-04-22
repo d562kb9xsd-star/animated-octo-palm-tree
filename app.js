@@ -1,5 +1,4 @@
 window.addEventListener("load", async () => {
-
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
@@ -22,45 +21,45 @@ window.addEventListener("load", async () => {
 
   try {
     if (!window.UFO_APP_CONFIG) {
-      showDebug("❌ Missing config.js");
-      return;
-    }
-
-    if (!window.supabase) {
-      showDebug("❌ Supabase script not loaded");
+      showDebug("Missing window.UFO_APP_CONFIG");
       return;
     }
 
     const { supabaseUrl, supabaseAnonKey } = window.UFO_APP_CONFIG;
 
-    const client = window.supabase.createClient(
-      supabaseUrl,
-      supabaseAnonKey
-    );
+    if (!supabaseUrl || !supabaseAnonKey) {
+      showDebug("Config is incomplete");
+      return;
+    }
+
+    if (!window.supabase) {
+      showDebug("Supabase library did not load");
+      return;
+    }
+
+    const client = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
     const { data, error } = await client
       .from("cases")
       .select("status, media_url, location");
 
     if (error) {
-      showDebug("❌ Supabase error:\n" + JSON.stringify(error, null, 2));
+      showDebug("Supabase error:\n" + JSON.stringify(error, null, 2));
       return;
     }
 
     const approvedRows = (data || []).filter(
-      row => String(row.status || "").toLowerCase() === "approved"
+      row => String(row.status || "").trim().toLowerCase() === "approved"
     );
 
     const approved = approvedRows.length;
-
     const media = approvedRows.filter(
-      row => row.media_url && row.media_url !== "EMPTY"
+      row => row.media_url && String(row.media_url).trim() !== "" && row.media_url !== "EMPTY"
     ).length;
-
     const locations = new Set(
       approvedRows
-        .map(r => r.location)
-        .filter(Boolean)
+        .map(row => row.location)
+        .filter(v => v && String(v).trim() !== "")
     ).size;
 
     setText("approved-count", approved);
@@ -68,14 +67,13 @@ window.addEventListener("load", async () => {
     setText("location-count", locations);
 
     showDebug(
-      "✅ Connected successfully\n\n" +
-      "Total rows: " + data.length + "\n" +
-      "Approved: " + approved + "\n" +
-      "With media: " + media + "\n" +
-      "Locations: " + locations
+      "Connected OK\n" +
+      "Total rows: " + (data ? data.length : 0) + "\n" +
+      "Approved rows: " + approved + "\n" +
+      "Rows with media: " + media + "\n" +
+      "Unique locations: " + locations
     );
-
   } catch (err) {
-    showDebug("❌ App crash:\n" + err.message);
+    showDebug("App error:\n" + (err && err.message ? err.message : String(err)));
   }
 });
