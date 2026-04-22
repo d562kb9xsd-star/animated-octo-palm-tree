@@ -1,31 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin</title>
-
-<link rel="icon" href="favicon.svg"/>
-<link rel="stylesheet" href="styles.css"/>
+  <title>UFO Admin</title>
 </head>
+<body style="font-family: Arial; max-width: 1000px; margin: 40px auto; background:#f5f5f5;">
 
-<body>
+<h1>👮 UFO Admin Panel</h1>
+<p>Pending reports awaiting review.</p>
 
-<div id="login-view">
-<form id="admin-login-form">
-<input id="admin-email" placeholder="Email"/>
-<input id="admin-password" type="password"/>
-<button>Login</button>
-</form>
-<div id="admin-notice"></div>
-</div>
-
-<div id="admin-view" class="hidden">
-<button id="logout-button">Logout</button>
-<div id="admin-cases"></div>
-</div>
+<div id="list">Loading...</div>
 
 <script src="config.js"></script>
-<script src="app.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>
