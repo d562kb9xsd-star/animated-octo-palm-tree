@@ -29,6 +29,11 @@
   const list = document.getElementById("list");
   list.innerHTML = "";
 
+  if (data.length === 0) {
+    list.innerHTML = "<p>No approved sightings yet</p>";
+    return;
+  }
+
   data.forEach(item => {
     const div = document.createElement("div");
     div.style.border = "1px solid #ccc";
