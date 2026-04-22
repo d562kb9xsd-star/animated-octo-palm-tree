@@ -1,31 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Submit</title>
-
-<link rel="icon" href="favicon.svg"/>
-<link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit UFO Report</title>
 </head>
+<body style="font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 20px;">
+  <h1>Submit UFO Report</h1>
+  <p>Send in a new sighting for review.</p>
 
-<body>
-<main class="container">
-<h1>Submit UFO Case</h1>
+  <form id="report-form" style="display:grid; gap:12px; max-width:600px;">
+    <label>
+      Title<br>
+      <input id="title" type="text" required style="width:100%; padding:8px;">
+    </label>
 
-<form id="submit-form">
-<input name="title" placeholder="Title" required/>
-<input name="location" placeholder="Location"/>
-<textarea name="summary" placeholder="Summary"></textarea>
-<input type="file" name="media"/>
+    <label>
+      Description<br>
+      <textarea id="description" rows="5" required style="width:100%; padding:8px;"></textarea>
+    </label>
 
-<button type="submit">Submit</button>
-</form>
+    <label>
+      Location<br>
+      <input id="location" type="text" required style="width:100%; padding:8px;">
+    </label>
 
-<div id="submit-notice"></div>
-</main>
+    <label>
+      Media URL<br>
+      <input id="media_url" type="text" placeholder="https://..." style="width:100%; padding:8px;">
+    </label>
 
-<script src="config.js"></script>
-<script src="app.js"></script>
+    <button type="submit" style="padding:10px 14px;">Submit report</button>
+  </form>
+
+  <pre id="debug" style="margin-top:20px;padding:12px;border:1px solid #ccc;background:#f7f7f7;white-space:pre-wrap;">Ready.</pre>
+
+  <script src="config.js"></script>
+  <script src="submit.js"></script>
 </body>
 </html>
