@@ -1,29 +1,30 @@
 (async () => {
   const container = document.getElementById("archive-list");
 
-  function escapeHtml(text) {
-    return text
-      ? text
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-      : "";
+  if (!container) {
+    console.error("archive-list not found");
+    return;
   }
 
-  function showMessage(msg) {
-    if (container) {
-      container.innerHTML = `<p style="color:#aaa;">${msg}</p>`;
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function normaliseTags(tags) {
+    if (Array.isArray(tags)) return tags;
+    if (typeof tags === "string" && tags.trim() !== "") {
+      return tags.split(",").map(t => t.trim()).filter(Boolean);
     }
-    console.log(msg);
+    return [];
   }
 
   try {
-    if (!container) {
-      console.error("archive-list container not found");
-      return;
-    }
-
-    showMessage("Loading approved UFO cases...");
+    container.innerHTML = "<p>Loading approved UFO cases...</p>";
 
     const url =
       window.UFO_APP_CONFIG.supabaseUrl +
@@ -32,58 +33,49 @@
     const res = await fetch(url, {
       headers: {
         apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
-        Authorization:
-          "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey,
-      },
+        Authorization: "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey
+      }
     });
 
     if (!res.ok) {
       const text = await res.text();
-      showMessage("Error loading data: " + text);
+      container.innerHTML = `<p style="color:red;">Error ${res.status}: ${escapeHtml(text)}</p>`;
       return;
     }
 
     const data = await res.json();
-    console.log("DATA:", data);
 
-    if (!data || data.length === 0) {
-      showMessage("No approved UFO cases yet.");
+    if (!Array.isArray(data) || data.length === 0) {
+      container.innerHTML = "<p>No approved UFO cases found.</p>";
       return;
     }
 
     container.innerHTML = "";
 
-    data.forEach((item) => {
-      const div = document.createElement("div");
-      div.className = "case";
+    data.forEach(item => {
+      const tags = normaliseTags(item.tags);
+      const tagHtml = tags.map(tag =>
+        `<span class="badge">${escapeHtml(tag)}</span>`
+      ).join("");
 
-      // ✅ SAFE TAG HANDLING (fixes your crash)
-      const tags = Array.isArray(item.tags)
-        ? item.tags
-        : typeof item.tags === "string" && item.tags.trim() !== ""
-        ? item.tags.split(",").map((t) => t.trim())
-        : [];
+      const card = document.createElement("div");
+      card.className = "case";
 
-      const tagHtml = tags
-        .map((t) => `<span class="badge">${escapeHtml(t)}</span>`)
-        .join("");
-
-      div.innerHTML = `
+      card.innerHTML = `
         <h3>${escapeHtml(item.title || "Untitled")}</h3>
-        <p><strong>Location:</strong> ${escapeHtml(
-          item.location || "Unknown"
-        )}</p>
+        <p><strong>Location:</strong> ${escapeHtml(item.location || "Unknown")}</p>
+        <p><strong>Date:</strong> ${escapeHtml(item.date_observed || item.created_at || "Unknown")}</p>
         <p>${escapeHtml(item.summary || item.description || "")}</p>
-        <div style="margin-top:8px;">${tagHtml}</div>
+        ${item.media_url ? `<p><a href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener noreferrer">Open media</a></p>` : ""}
+        ${tagHtml ? `<div class="tags">${tagHtml}</div>` : ""}
       `;
 
-      container.appendChild(div);
+      container.appendChild(card);
     });
 
-    console.log("Rendered successfully");
-
+    console.log("Approved cases rendered");
   } catch (err) {
     console.error(err);
-    showMessage("Connection error: " + err.message);
+    container.innerHTML = `<p style="color:red;">Connection error: ${escapeHtml(err.message)}</p>`;
   }
 })();
