@@ -1,18 +1,20 @@
 (async () => {
-
   const container = document.getElementById("archive-list");
 
-  // Safety check
   if (!container) {
-    console.error("archive-list div not found");
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      "<p style='color:red;padding:20px;'>archive-list div not found</p>"
+    );
     return;
   }
 
-  try {
-    console.log("Connecting to Supabase...");
+  container.innerHTML = "<p style='padding:20px;'>Loading archive…</p>";
 
-    const url = window.UFO_APP_CONFIG.supabaseUrl +
-      "/rest/v1/cases?status=eq.approved&order=created_at.desc";
+  try {
+    const url =
+      window.UFO_APP_CONFIG.supabaseUrl +
+      "/rest/v1/cases?select=*&order=created_at.desc";
 
     const res = await fetch(url, {
       headers: {
@@ -22,36 +24,72 @@
       }
     });
 
+    const text = await res.text();
+
     if (!res.ok) {
-      const errorText = await res.text();
-      container.innerHTML = `<p style="color:red;">Error ${res.status}: ${errorText}</p>`;
+      container.innerHTML = `
+        <div style="padding:20px;color:#ffb4b4;">
+          <h3>Fetch failed</h3>
+          <p>Status: ${res.status}</p>
+          <pre style="white-space:pre-wrap;">${text}</pre>
+        </div>
+      `;
       return;
     }
 
-    const data = await res.json();
-
-    console.log("Data received:", data);
-
-    if (!data || data.length === 0) {
-      container.innerHTML = "<p>No approved UFO reports found.</p>";
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      container.innerHTML = `
+        <div style="padding:20px;color:#ffb4b4;">
+          <h3>Response was not valid JSON</h3>
+          <pre style="white-space:pre-wrap;">${text}</pre>
+        </div>
+      `;
       return;
     }
 
-    // Render cases
-    container.innerHTML = data.map(item => `
+    if (!Array.isArray(data)) {
+      container.innerHTML = `
+        <div style="padding:20px;color:#ffb4b4;">
+          <h3>Unexpected response</h3>
+          <pre style="white-space:pre-wrap;">${JSON.stringify(data, null, 2)}</pre>
+        </div>
+      `;
+      return;
+    }
+
+    if (data.length === 0) {
+      container.innerHTML = `
+        <div style="padding:20px;">
+          <h3>No rows returned</h3>
+          <p>Supabase connection worked, but the query returned 0 records.</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="padding:20px;">
+        <p><strong>Rows returned:</strong> ${data.length}</p>
+      </div>
+    ` + data.map(item => `
       <div class="case">
         <h3>${item.title || "Untitled report"}</h3>
+        <p><strong>Status:</strong> ${item.status || "none"}</p>
         <p><strong>Location:</strong> ${item.location || "Unknown"}</p>
-        <p><strong>Date:</strong> ${item.date_observed || "Unknown"}</p>
-        <p>${item.description || ""}</p>
+        <p><strong>Date:</strong> ${item.date_observed || item.created_at || "Unknown"}</p>
+        <p>${item.summary || item.description || ""}</p>
       </div>
     `).join("");
 
-    console.log("SUCCESS: UFO reports loaded");
-
   } catch (err) {
-    console.error("Fetch error:", err);
-    container.innerHTML = "<p style='color:red;'>Failed to load UFO reports.</p>";
+    container.innerHTML = `
+      <div style="padding:20px;color:#ffb4b4;">
+        <h3>JavaScript error</h3>
+        <pre style="white-space:pre-wrap;">${err.message}</pre>
+      </div>
+    `;
   }
-
 })();
