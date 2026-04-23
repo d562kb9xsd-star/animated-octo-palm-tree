@@ -1,17 +1,19 @@
 (async () => {
   const container = document.getElementById("archive-list");
 
-  function showMessage(msg) {
+  function log(msg) {
+    console.log(msg);
     if (container) {
       container.innerHTML = `<p style="color:#aaa;">${msg}</p>`;
     }
   }
 
   try {
-    showMessage("Loading UFO reports...");
+    log("Loading approved UFO cases...");
 
-    const url = window.UFO_APP_CONFIG.supabaseUrl +
-      "/rest/v1/cases?status=eq.approved&order=created_at.desc";
+    const url =
+      window.UFO_APP_CONFIG.supabaseUrl +
+      "/rest/v1/cases?status=eq.approved&select=*";
 
     const res = await fetch(url, {
       headers: {
@@ -20,16 +22,19 @@
       }
     });
 
+    console.log("Response status:", res.status);
+
     if (!res.ok) {
       const text = await res.text();
-      showMessage("Error: " + text);
+      log("ERROR: " + text);
       return;
     }
 
     const data = await res.json();
+    console.log("DATA:", data);
 
-    if (!data.length) {
-      showMessage("No approved UFO cases yet.");
+    if (!data || data.length === 0) {
+      log("No approved UFO cases found.");
       return;
     }
 
@@ -42,13 +47,16 @@
       div.innerHTML = `
         <h3>${item.title || "Untitled"}</h3>
         <p><strong>Location:</strong> ${item.location || "Unknown"}</p>
-        <p>${item.summary || ""}</p>
+        <p>${item.description || item.summary || ""}</p>
       `;
 
       container.appendChild(div);
     });
 
-  } catch (e) {
-    showMessage("Connection error: " + e.message);
+    console.log("Rendered successfully");
+
+  } catch (err) {
+    console.error(err);
+    log("Connection error: " + err.message);
   }
 })();
