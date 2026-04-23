@@ -1,15 +1,29 @@
 (async () => {
   const container = document.getElementById("archive-list");
 
-  function log(msg) {
-    console.log(msg);
+  function escapeHtml(text) {
+    return text
+      ? text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+      : "";
+  }
+
+  function showMessage(msg) {
     if (container) {
       container.innerHTML = `<p style="color:#aaa;">${msg}</p>`;
     }
+    console.log(msg);
   }
 
   try {
-    log("Loading approved UFO cases...");
+    if (!container) {
+      console.error("archive-list container not found");
+      return;
+    }
+
+    showMessage("Loading approved UFO cases...");
 
     const url =
       window.UFO_APP_CONFIG.supabaseUrl +
@@ -18,15 +32,14 @@
     const res = await fetch(url, {
       headers: {
         apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
-        Authorization: "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey
-      }
+        Authorization:
+          "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey,
+      },
     });
-
-    console.log("Response status:", res.status);
 
     if (!res.ok) {
       const text = await res.text();
-      log("ERROR: " + text);
+      showMessage("Error loading data: " + text);
       return;
     }
 
@@ -34,20 +47,34 @@
     console.log("DATA:", data);
 
     if (!data || data.length === 0) {
-      log("No approved UFO cases found.");
+      showMessage("No approved UFO cases yet.");
       return;
     }
 
     container.innerHTML = "";
 
-    data.forEach(item => {
+    data.forEach((item) => {
       const div = document.createElement("div");
       div.className = "case";
 
+      // ✅ SAFE TAG HANDLING (fixes your crash)
+      const tags = Array.isArray(item.tags)
+        ? item.tags
+        : typeof item.tags === "string" && item.tags.trim() !== ""
+        ? item.tags.split(",").map((t) => t.trim())
+        : [];
+
+      const tagHtml = tags
+        .map((t) => `<span class="badge">${escapeHtml(t)}</span>`)
+        .join("");
+
       div.innerHTML = `
-        <h3>${item.title || "Untitled"}</h3>
-        <p><strong>Location:</strong> ${item.location || "Unknown"}</p>
-        <p>${item.description || item.summary || ""}</p>
+        <h3>${escapeHtml(item.title || "Untitled")}</h3>
+        <p><strong>Location:</strong> ${escapeHtml(
+          item.location || "Unknown"
+        )}</p>
+        <p>${escapeHtml(item.summary || item.description || "")}</p>
+        <div style="margin-top:8px;">${tagHtml}</div>
       `;
 
       container.appendChild(div);
@@ -57,6 +84,6 @@
 
   } catch (err) {
     console.error(err);
-    log("Connection error: " + err.message);
+    showMessage("Connection error: " + err.message);
   }
 })();
