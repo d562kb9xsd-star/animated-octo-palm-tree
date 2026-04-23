@@ -1,93 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>UFO Archive Pro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>UFO Archive</title>
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: Arial;
       background: #0b1220;
-      color: #fff;
-    }
-
-    header {
-      padding: 20px;
-      background: #111827;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav a {
-      color: #9ca3af;
-      margin-left: 20px;
-      text-decoration: none;
-    }
-
-    nav a:hover {
-      color: #fff;
-    }
-
-    .hero {
-      padding: 40px;
-      background: linear-gradient(to right, #111827, #1e293b);
-    }
-
-    .hero h1 {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .container {
+      color: white;
       padding: 20px;
     }
 
     .case {
       background: #1e293b;
       padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 10px;
-    }
-
-    .case h3 {
-      margin: 0 0 5px;
-    }
-
-    .case p {
-      margin: 5px 0;
-      color: #cbd5f5;
+      margin-bottom: 10px;
+      border-radius: 8px;
     }
   </style>
 </head>
-
 <body>
 
-<header>
-  <h2>UFO Archive Pro</h2>
-  <nav>
-    <a href="#">Home</a>
-    <a href="#">Archive</a>
-    <a href="#">Submit</a>
-    <a href="#">Admin</a>
-  </nav>
-</header>
+<h1>Approved UFO Reports</h1>
 
-<section class="hero">
-  <h1>Approved UFO reports and published evidence</h1>
-  <p>Browse public sightings and approved cases.</p>
-</section>
+<div id="archive-list">Loading...</div>
 
-<div class="container">
-  <h2>Public archive of approved UFO cases</h2>
-
-  <!-- DATA LOADS HERE -->
-  <div id="archive-list"></div>
-</div>
-
-<!-- IMPORTANT: LOAD THESE -->
 <script src="config.js"></script>
 <script src="app.js"></script>
 
