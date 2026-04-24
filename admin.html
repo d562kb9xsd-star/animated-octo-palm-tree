@@ -3,105 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>Admin - UFO Archive Pro</title>
+
   <link rel="stylesheet" href="styles.css" />
 
   <style>
-    body {
-      background: #0b1020;
-      color: #fff;
-      font-family: Arial, sans-serif;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    input, button {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      margin-top: 10px;
-    }
-
-    input {
-      width: 100%;
-      background: #151c33;
-      color: white;
-    }
-
-    button {
-      cursor: pointer;
-      background: #4f7cff;
-      color: white;
-      margin-right: 8px;
-    }
-
-    .secondary {
-      background: #444;
-    }
-
-    .danger {
-      background: #c0392b;
-    }
-
-    .case {
-      background: #151c33;
-      border-radius: 12px;
-      padding: 16px;
-      margin: 16px 0;
-    }
-
-    video, img {
-      max-width: 100%;
-      border-radius: 12px;
-      margin-top: 10px;
-    }
-
-    #admin-protected {
-      display: none;
-    }
-
-    #admin-status, #admin-login-status {
-      margin-top: 10px;
-      color: #cfd8ff;
-    }
+    body { background:#0b1020; color:#fff; font-family:Arial; }
+    .container { max-width:900px; margin:auto; padding:20px; }
+    input,button { padding:12px; border-radius:8px; border:none; margin-top:10px; }
+    input { width:100%; background:#151c33; color:white; }
+    button { cursor:pointer; background:#4f7cff; color:white; margin-right:8px; }
+    .danger { background:#c0392b; }
+    .secondary { background:#444; }
+    .case { background:#151c33; padding:16px; margin:16px 0; border-radius:12px; }
+    img,video { max-width:100%; margin-top:10px; border-radius:12px; }
+    #admin-protected { display:none; }
   </style>
 </head>
 
 <body>
-
   <div class="container">
-    <h1>Admin Review Queue</h1>
+    <h1>Admin Panel</h1>
 
-    <!-- LOGIN -->
     <div id="admin-login">
-      <label for="admin-password">Admin password</label>
       <input id="admin-password" type="password" placeholder="Enter password" />
-
-      <button id="admin-login-btn">Unlock admin</button>
-
+      <button id="admin-login-btn">Login</button>
       <div id="admin-login-status"></div>
     </div>
 
-    <!-- ADMIN PANEL -->
     <div id="admin-protected">
-      <button id="admin-signout-btn" class="secondary">Lock admin</button>
-
+      <button id="admin-signout-btn" class="secondary">Logout</button>
       <div id="admin-status"></div>
-
       <div id="admin-list"></div>
     </div>
   </div>
 
-  <!-- CONFIG -->
-  <script src="config.js?v=100"></script>
-
-  <!-- ADMIN SCRIPT -->
-  <script src="admin.js?v=100"></script>
-
+  <script src="config.js?v=300"></script>
+  <script src="admin.js?v=300"></script>
 </body>
 </html>
