@@ -7,19 +7,14 @@ const loginBtn = document.getElementById("admin-login-btn");
 const signoutBtn = document.getElementById("admin-signout-btn");
 const listEl = document.getElementById("admin-list");
 
-function media(item) {
-  if (!item.media_url) return "";
-  return item.media_type?.startsWith("video")
-    ? `<video src="${item.media_url}" controls></video>`
-    : `<img src="${item.media_url}" />`;
-}
-
+// LOAD CASES
 async function loadCases() {
   listEl.innerHTML = "Loading...";
 
   const res = await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
-      "/rest/v1/cases?select=*&order=created_at.desc",
+      "/rest/v1/cases?select=*&order=created_at.desc&_=" +
+      Date.now(),
     {
       headers: {
         apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
@@ -33,26 +28,43 @@ async function loadCases() {
 
   listEl.innerHTML = "";
 
-  data.forEach((c) => {
-    const div = document.createElement("div");
+  if (!data.length) {
+    listEl.innerHTML = "<p>No pending cases.</p>";
+    return;
+  }
 
-    div.className = "case";
+  data.forEach((item) => {
+    let media = "";
 
-    div.innerHTML = `
-      <h3>${c.title}</h3>
-      <p>${c.location}</p>
-      <p>Status: ${c.status}</p>
-      ${media(c)}
-      <button data-a="approve" data-id="${c.id}">Approve</button>
-      <button data-a="reject" data-id="${c.id}">Reject</button>
-      <button class="danger" data-a="delete" data-id="${c.id}">Delete</button>
+    if (item.media_url) {
+      if (item.media_type?.startsWith("video")) {
+        media = `<video src="${item.media_url}" controls></video>`;
+      } else {
+        media = `<img src="${item.media_url}" />`;
+      }
+    }
+
+    const card = document.createElement("div");
+
+    card.innerHTML = `
+      <h3>${item.title}</h3>
+      <p>${item.location}</p>
+      <p>Status: ${item.status}</p>
+
+      ${media}
+
+      <button data-action="approve" data-id="${item.id}">Approve</button>
+      <button data-action="reject" data-id="${item.id}">Reject</button>
+      <button data-action="delete" data-id="${item.id}">Delete</button>
+      <hr>
     `;
 
-    listEl.appendChild(div);
+    listEl.appendChild(card);
   });
 }
 
-async function update(id, status) {
+// UPDATE STATUS
+async function updateCase(id, status) {
   await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
       `/rest/v1/cases?id=eq.${id}`,
@@ -66,13 +78,16 @@ async function update(id, status) {
       body: JSON.stringify({ status })
     }
   );
+
   loadCases();
 }
 
-async function del(id) {
-  if (!confirm("Delete?")) return;
+// DELETE
+async function deleteCase(id) {
+  if (!confirm("Delete this case?")) return;
 
-  const r = await fetch(
+  // get file path
+  const res = await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
       `/rest/v1/cases?id=eq.${id}&select=media_path`,
     {
@@ -83,13 +98,14 @@ async function del(id) {
     }
   );
 
-  const d = await r.json();
-  const path = d[0]?.media_path;
+  const data = await res.json();
+  const mediaPath = data[0]?.media_path;
 
-  if (path) {
+  // delete file
+  if (mediaPath) {
     await fetch(
       window.UFO_APP_CONFIG.supabaseUrl +
-        `/storage/v1/object/ufo-media/${path}`,
+        `/storage/v1/object/ufo-media/${mediaPath}`,
       {
         method: "DELETE",
         headers: {
@@ -100,6 +116,7 @@ async function del(id) {
     );
   }
 
+  // delete DB row
   await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
       `/rest/v1/cases?id=eq.${id}`,
@@ -115,31 +132,39 @@ async function del(id) {
   loadCases();
 }
 
-loginBtn.onclick = () => {
-  if (passwordInput.value.trim() !== ADMIN_PASSWORD) return;
+// LOGIN
+function unlockAdmin() {
+  if (passwordInput.value !== ADMIN_PASSWORD) return;
 
   sessionStorage.setItem("admin", "yes");
   loginWrap.style.display = "none";
   protectedWrap.style.display = "block";
-  loadCases();
-};
 
-signoutBtn.onclick = () => {
+  loadCases();
+}
+
+// LOGOUT
+function lockAdmin() {
   sessionStorage.removeItem("admin");
   location.reload();
-};
+}
 
-listEl.onclick = (e) => {
-  const b = e.target.closest("button");
-  if (!b) return;
+loginBtn.onclick = unlockAdmin;
+signoutBtn.onclick = lockAdmin;
 
-  const id = b.dataset.id;
+// BUTTON HANDLER
+listEl.addEventListener("click", (e) => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
 
-  if (b.dataset.a === "approve") update(id, "approved");
-  if (b.dataset.a === "reject") update(id, "rejected");
-  if (b.dataset.a === "delete") del(id);
-};
+  const id = btn.dataset.id;
 
+  if (btn.dataset.action === "approve") updateCase(id, "approved");
+  if (btn.dataset.action === "reject") updateCase(id, "rejected");
+  if (btn.dataset.action === "delete") deleteCase(id);
+});
+
+// AUTO LOGIN
 if (sessionStorage.getItem("admin")) {
   loginWrap.style.display = "none";
   protectedWrap.style.display = "block";
