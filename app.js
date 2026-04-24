@@ -1,81 +1,41 @@
 (async () => {
-  const container = document.getElementById("archive-list");
+  const el = document.getElementById("archive-list");
 
-  if (!container) {
-    console.error("archive-list not found");
-    return;
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-  }
-
-  function normaliseTags(tags) {
-    if (Array.isArray(tags)) return tags;
-    if (typeof tags === "string" && tags.trim() !== "") {
-      return tags.split(",").map(t => t.trim()).filter(Boolean);
-    }
-    return [];
-  }
-
-  try {
-    container.innerHTML = "<p>Loading approved UFO cases...</p>";
-
-    const url =
-      window.UFO_APP_CONFIG.supabaseUrl +
-      "/rest/v1/cases?status=eq.approved&select=*";
-
-    const res = await fetch(url, {
+  const res = await fetch(
+    window.UFO_APP_CONFIG.supabaseUrl +
+      "/rest/v1/cases?status=eq.approved&select=*&order=created_at.desc",
+    {
       headers: {
         apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
-        Authorization: "Bearer " + window.UFO_APP_CONFIG.supabaseAnonKey
+        Authorization: `Bearer ${window.UFO_APP_CONFIG.supabaseAnonKey}`,
+        "Cache-Control": "no-cache"
       }
-    });
+    }
+  );
 
-    if (!res.ok) {
-      const text = await res.text();
-      container.innerHTML = `<p style="color:red;">Error ${res.status}: ${escapeHtml(text)}</p>`;
-      return;
+  const data = await res.json();
+
+  el.innerHTML = "";
+
+  data.forEach((c) => {
+    let media = "";
+
+    if (c.media_url) {
+      media = c.media_type?.startsWith("video")
+        ? `<video src="${c.media_url}" controls></video>`
+        : `<img src="${c.media_url}" />`;
     }
 
-    const data = await res.json();
+    const div = document.createElement("div");
 
-    if (!Array.isArray(data) || data.length === 0) {
-      container.innerHTML = "<p>No approved UFO cases found.</p>";
-      return;
-    }
+    div.innerHTML = `
+      <h3>${c.title}</h3>
+      <p>${c.location}</p>
+      <p>${c.summary}</p>
+      ${media}
+      <hr>
+    `;
 
-    container.innerHTML = "";
-
-    data.forEach(item => {
-      const tags = normaliseTags(item.tags);
-      const tagHtml = tags.map(tag =>
-        `<span class="badge">${escapeHtml(tag)}</span>`
-      ).join("");
-
-      const card = document.createElement("div");
-      card.className = "case";
-
-      card.innerHTML = `
-        <h3>${escapeHtml(item.title || "Untitled")}</h3>
-        <p><strong>Location:</strong> ${escapeHtml(item.location || "Unknown")}</p>
-        <p><strong>Date:</strong> ${escapeHtml(item.date_observed || item.created_at || "Unknown")}</p>
-        <p>${escapeHtml(item.summary || item.description || "")}</p>
-        ${item.media_url ? `<p><a href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener noreferrer">Open media</a></p>` : ""}
-        ${tagHtml ? `<div class="tags">${tagHtml}</div>` : ""}
-      `;
-
-      container.appendChild(card);
-    });
-
-    console.log("Approved cases rendered");
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = `<p style="color:red;">Connection error: ${escapeHtml(err.message)}</p>`;
-  }
+    el.appendChild(div);
+  });
 })();
