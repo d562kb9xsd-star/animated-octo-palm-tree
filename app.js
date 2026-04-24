@@ -1,41 +1,59 @@
 (async () => {
-  const el = document.getElementById("archive-list");
+  const container = document.getElementById("archive-list");
 
-  const res = await fetch(
-    window.UFO_APP_CONFIG.supabaseUrl +
-      "/rest/v1/cases?status=eq.approved&select=*&order=created_at.desc",
-    {
+  container.innerHTML = "Loading...";
+
+  try {
+    const url =
+      window.UFO_APP_CONFIG.supabaseUrl +
+      "/rest/v1/cases?status=eq.approved&select=*&order=created_at.desc&_=" +
+      Date.now(); // 🔥 breaks cache
+
+    const res = await fetch(url, {
+      cache: "no-store",
       headers: {
         apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
         Authorization: `Bearer ${window.UFO_APP_CONFIG.supabaseAnonKey}`,
         "Cache-Control": "no-cache"
       }
-    }
-  );
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  el.innerHTML = "";
+    container.innerHTML = "";
 
-  data.forEach((c) => {
-    let media = "";
-
-    if (c.media_url) {
-      media = c.media_type?.startsWith("video")
-        ? `<video src="${c.media_url}" controls></video>`
-        : `<img src="${c.media_url}" />`;
+    if (!data.length) {
+      container.innerHTML = "<p>No approved UFO cases.</p>";
+      return;
     }
 
-    const div = document.createElement("div");
+    data.forEach((item) => {
+      let media = "";
 
-    div.innerHTML = `
-      <h3>${c.title}</h3>
-      <p>${c.location}</p>
-      <p>${c.summary}</p>
-      ${media}
-      <hr>
-    `;
+      if (item.media_url) {
+        if (item.media_type?.startsWith("video")) {
+          media = `<video src="${item.media_url}" controls style="max-width:100%"></video>`;
+        } else {
+          media = `<img src="${item.media_url}" style="max-width:100%" />`;
+        }
+      }
 
-    el.appendChild(div);
-  });
+      const card = document.createElement("div");
+
+      card.innerHTML = `
+        <h3>${item.title}</h3>
+        <p><strong>Location:</strong> ${item.location}</p>
+        <p><strong>Date:</strong> ${item.date_observed}</p>
+        <p>${item.summary}</p>
+        ${media}
+        <hr>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "Error loading data";
+  }
 })();
