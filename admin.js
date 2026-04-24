@@ -1,7 +1,6 @@
-// ===== CONFIG =====
 const ADMIN_PASSWORD = "ufocases123";
 
-// ===== ELEMENTS =====
+// ELEMENTS
 const loginWrap = document.getElementById("admin-login");
 const protectedWrap = document.getElementById("admin-protected");
 const passwordInput = document.getElementById("admin-password");
@@ -11,7 +10,7 @@ const signoutBtn = document.getElementById("admin-signout-btn");
 const listEl = document.getElementById("admin-list");
 const statusEl = document.getElementById("admin-status");
 
-// ===== HELPERS =====
+// HELPERS
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -24,37 +23,34 @@ function escapeHtml(value) {
 function mediaHtml(item) {
   if (!item.media_url) return "";
 
-  const url = escapeHtml(item.media_url);
-  const type = item.media_type || "";
-
-  if (type.startsWith("video")) {
-    return `<video src="${url}" controls></video>`;
+  if (item.media_type?.startsWith("video")) {
+    return `<video src="${item.media_url}" controls></video>`;
   }
 
-  return `<img src="${url}" />`;
+  return `<img src="${item.media_url}" />`;
 }
 
-// ===== LOAD CASES =====
-async function loadPending() {
+// LOAD ALL CASES
+async function loadCases() {
   statusEl.textContent = "Loading cases...";
   listEl.innerHTML = "";
 
-  const url =
+  const res = await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
-    "/rest/v1/cases?select=*&order=created_at.desc";
-
-  const res = await fetch(url, {
-    headers: {
-      apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
-      Authorization: `Bearer ${window.UFO_APP_CONFIG.supabaseAnonKey}`
+      "/rest/v1/cases?select=*&order=created_at.desc",
+    {
+      headers: {
+        apikey: window.UFO_APP_CONFIG.supabaseAnonKey,
+        Authorization: `Bearer ${window.UFO_APP_CONFIG.supabaseAnonKey}`,
+        "Cache-Control": "no-cache"
+      }
     }
-  });
+  );
 
   const data = await res.json();
 
   data.forEach((item) => {
     const card = document.createElement("div");
-    card.className = "case";
 
     card.innerHTML = `
       <h3>${escapeHtml(item.title)}</h3>
@@ -71,9 +67,11 @@ async function loadPending() {
 
     listEl.appendChild(card);
   });
+
+  statusEl.textContent = "";
 }
 
-// ===== UPDATE STATUS =====
+// UPDATE STATUS
 async function updateCase(id, status) {
   await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
@@ -89,14 +87,14 @@ async function updateCase(id, status) {
     }
   );
 
-  loadPending();
+  loadCases();
 }
 
-// ===== DELETE CASE =====
+// DELETE CASE + MEDIA
 async function deleteCase(id) {
   if (!confirm("Delete this case?")) return;
 
-  // get media path first
+  // get media path
   const res = await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
       `/rest/v1/cases?id=eq.${id}&select=media_path`,
@@ -109,7 +107,6 @@ async function deleteCase(id) {
   );
 
   const data = await res.json();
-
   const mediaPath = data[0]?.media_path;
 
   // delete file from storage
@@ -127,7 +124,7 @@ async function deleteCase(id) {
     );
   }
 
-  // delete record
+  // delete DB record
   await fetch(
     window.UFO_APP_CONFIG.supabaseUrl +
       `/rest/v1/cases?id=eq.${id}`,
@@ -140,54 +137,48 @@ async function deleteCase(id) {
     }
   );
 
-  loadPending();
+  loadCases();
 }
 
-// ===== LOGIN =====
+// LOGIN
 function unlockAdmin() {
-  const entered = passwordInput.value.trim();
-
-  if (entered !== ADMIN_PASSWORD) {
+  if (passwordInput.value.trim() !== ADMIN_PASSWORD) {
     loginStatus.textContent = "Wrong password.";
     return;
   }
 
-  sessionStorage.setItem("ufo_admin_unlocked", "yes");
-
+  sessionStorage.setItem("admin", "yes");
   loginWrap.style.display = "none";
   protectedWrap.style.display = "block";
 
-  loadPending();
+  loadCases();
 }
 
-// ===== LOGOUT =====
+// LOGOUT
 function lockAdmin() {
-  sessionStorage.removeItem("ufo_admin_unlocked");
-
+  sessionStorage.removeItem("admin");
   protectedWrap.style.display = "none";
   loginWrap.style.display = "block";
 }
 
-// ===== EVENTS =====
+// EVENTS
 loginBtn.addEventListener("click", unlockAdmin);
-
 signoutBtn.addEventListener("click", lockAdmin);
 
-listEl.addEventListener("click", async (e) => {
+listEl.addEventListener("click", (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
 
   const id = btn.dataset.id;
-  const action = btn.dataset.action;
 
-  if (action === "approve") updateCase(id, "approved");
-  if (action === "reject") updateCase(id, "rejected");
-  if (action === "delete") deleteCase(id);
+  if (btn.dataset.action === "approve") updateCase(id, "approved");
+  if (btn.dataset.action === "reject") updateCase(id, "rejected");
+  if (btn.dataset.action === "delete") deleteCase(id);
 });
 
-// ===== AUTO LOGIN =====
-if (sessionStorage.getItem("ufo_admin_unlocked")) {
+// AUTO LOGIN
+if (sessionStorage.getItem("admin")) {
   loginWrap.style.display = "none";
   protectedWrap.style.display = "block";
-  loadPending();
+  loadCases();
 }
